@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK • Neural Graph v0.3.2 • HF Powered</title>
+    <title>SUDOTEK • Neural Graph v0.3.3 • HF Powered</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -88,7 +88,7 @@
             padding: 12px 20px;
             border-radius: 4px;
             z-index: 1000;
-            max-width: 320px;
+            max-width: 340px;
         }
     </style>
 </head>
@@ -102,7 +102,7 @@
                 <div class="flex items-center gap-3">
                     <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
                     <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
-                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.3.2 • HF POWERED</span>
+                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.3.3 • HF POWERED</span>
                 </div>
                 
                 <!-- HF Token -->
@@ -215,7 +215,7 @@
                 <button onclick="saveNodeConfig()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE CONFIG</button>
                 <button onclick="testCurrentNode()" class="flex-1 py-3 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">TEST INFERENCE</button>
             </div>
-            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call to a model can take 15-30s (cold start). Use SmolLM-135M for fastest results.</div>
+            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call can take 15-30s. Use TEST button first to verify your token works.</div>
         </div>
     </div>
 
@@ -438,7 +438,7 @@
             });
             if (!res.ok) {
                 const errText = await res.text();
-                throw new Error(`HF Error ${res.status}: ${errText.substring(0, 200)}`);
+                throw new Error(`HF ${res.status}: ${errText.substring(0, 150)}`);
             }
             const data = await res.json();
             if (Array.isArray(data) && data[0]?.generated_text) return data[0].generated_text.trim();
@@ -470,12 +470,16 @@
             } catch (e) {
                 logToPanel(`[${node.name}] ERROR: ${e.message}`, node.id);
                 
-                if (!isRetry && e.message.includes('503') || e.message.includes('loading')) {
-                    // Auto-retry once after 8 seconds for cold start
-                    showToast('Model is loading on HF servers (cold start). Retrying in 8s...', false, 8000);
+                const isNetworkError = e.message.includes('Failed to fetch') || e.message.includes('NetworkError');
+                const isColdStart = e.message.includes('503') || e.message.includes('loading');
+                
+                if (!isRetry && isColdStart) {
+                    showToast('Model loading on HF (cold start). Auto-retrying in 8s...', false, 8000);
                     setTimeout(() => fireNode(node, true), 8000);
+                } else if (isNetworkError) {
+                    showToast('Network error (Failed to fetch). Check your token or try TEST button first. HF may be rate-limited.', true);
                 } else {
-                    showToast('Inference failed: ' + e.message + ' — Try SmolLM-135M (fastest) or wait 20s and retry', true);
+                    showToast('Error: ' + e.message, true);
                 }
             } finally {
                 setTimeout(() => { if (node.element) node.element.classList.remove('firing'); }, 600);
@@ -649,10 +653,10 @@
                 ];
                 drawGraph();
                 
-                logToPanel('Neural Graph initialized with 4 tiny HF models (all SmolLM-135M for fastest loading). Enter your token & click RUN PARALLEL!', 'system');
+                logToPanel('Neural Graph initialized with 4 tiny HF models (SmolLM-135M). Use TEST button first to verify token!', 'system');
             }, 380);
             
-            console.log('%c[SUDOTEK v0.3.2] Real Hugging Face inference ready. Cold start handling improved.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.3.3] Real HF inference with better error handling for Failed to fetch.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
