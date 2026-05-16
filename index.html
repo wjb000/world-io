@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK</title>
+    <title>SUDOTEK • Neural Brain</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -25,53 +25,217 @@
             z-index: 1;
         }
         
-        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.06; pointer-events: none; }
+        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.05; pointer-events: none; }
+        
+        .region-card {
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .region-card:hover {
+            transform: translateY(-4px);
+            border-color: #00ff9d;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
+        }
+        
+        .node {
+            transition: all 0.2s ease;
+        }
+        .node.firing {
+            animation: fire 0.6s ease;
+            box-shadow: 0 0 25px #00ff41;
+        }
+        
+        @keyframes fire {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="min-h-screen crt text-[#00ff41]">
     <canvas id="matrix" class="matrix-bg"></canvas>
 
+    <!-- Top Bar -->
     <div class="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur border-b border-[#00ff41]/30 z-50">
-        <div class="max-w-4xl mx-auto px-8 py-5 flex items-center justify-between">
+        <div class="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <i class="fas fa-brain text-3xl text-[#00ff9d]"></i>
                 <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
+                <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.1</span>
             </div>
-            <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm">
-                <span id="note-count">0 notes</span>
+            
+            <div class="flex items-center gap-6 text-sm">
+                <a href="#regions" class="hover:text-[#00ff9d] transition-colors">REGIONS</a>
+                <a href="#nodes" class="hover:text-[#00ff9d] transition-colors">NODES</a>
+                <a href="#cloud" class="hover:text-[#00ff9d] transition-colors">CLOUD</a>
+                <a href="#pathways" class="hover:text-[#00ff9d] transition-colors">PATHWAYS</a>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/40 rounded text-xs flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span>SYSTEM ONLINE</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-8 pt-24 pb-12">
-        <div class="text-center mb-10">
-            <h1 class="text-6xl font-bold tracking-tight neon-text mb-3">SUDOTEK</h1>
-            <p class="text-[#00ff9d] text-2xl">Neural Brain Architecture • Notes</p>
+    <div class="max-w-6xl mx-auto px-8 pt-20 pb-16">
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center gap-2 px-4 py-1 bg-black border border-[#00ff41]/40 rounded-full mb-6">
+                <span class="text-xs tracking-[2px] text-[#00ff9d]">NEURAL BRAIN ARCHITECTURE • PHASE 1</span>
+            </div>
+            <h1 class="text-7xl font-bold tracking-tight neon-text mb-4">SUDOTEK</h1>
+            <p class="text-2xl text-[#00ff9d]">Micro Models • Cloud Environment • Visual Brain</p>
         </div>
 
-        <!-- Quick Add -->
-        <div class="mb-8 flex gap-3">
-            <input id="quick-input" type="text" 
-                   class="flex-1 bg-black border border-[#00ff41]/50 px-6 py-4 text-xl focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/50"
-                   placeholder="Type your architecture idea and press Enter..." 
-                   onkeydown="if (event.key === 'Enter') addQuickNote()">
-            <button onclick="addQuickNote()" 
-                    class="px-8 py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all text-xl">
-                ADD
-            </button>
-        </div>
-
-        <!-- Notes List -->
-        <div class="terminal-window bg-black border border-[#00ff41]/40">
-            <div class="px-6 py-4 border-b border-[#00ff41]/30 flex items-center justify-between">
-                <span class="text-[#00ff9d] text-sm tracking-widest">ARCHITECTURE NOTES</span>
+        <!-- CLOUD SECTION (Priority #1) -->
+        <div id="cloud" class="mb-16">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-cloud text-3xl text-[#00ff9d]"></i>
+                <div>
+                    <span class="text-4xl font-bold">CLOUD MICRO MODELS</span>
+                    <span class="ml-3 text-xs px-2 py-1 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">PHASE 1</span>
+                </div>
             </div>
             
-            <div id="notes-list" class="divide-y divide-[#00ff41]/20 max-h-[520px] overflow-auto"></div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Provider Cards -->
+                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="text-[#00ff9d] text-sm">PROVIDER</div>
+                            <div class="text-2xl font-bold">Groq</div>
+                        </div>
+                        <i class="fas fa-bolt text-3xl text-yellow-400"></i>
+                    </div>
+                    <div class="text-sm text-[#00ff41]/70 mb-4">Fastest inference • Llama 3.1 8B</div>
+                    
+                    <div class="flex items-center justify-between text-xs mb-3">
+                        <span>Status</span>
+                        <span class="text-emerald-400 flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> CONNECTED</span>
+                    </div>
+                    
+                    <button onclick="testCloudModel('groq')" 
+                            class="w-full py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors text-sm">
+                        TEST CONNECTION
+                    </button>
+                </div>
+
+                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="text-[#00ff9d] text-sm">PROVIDER</div>
+                            <div class="text-2xl font-bold">Together.ai</div>
+                        </div>
+                        <i class="fas fa-robot text-3xl text-purple-400"></i>
+                    </div>
+                    <div class="text-sm text-[#00ff41]/70 mb-4">Open models • Mixtral, Llama 3</div>
+                    
+                    <div class="flex items-center justify-between text-xs mb-3">
+                        <span>Status</span>
+                        <span class="text-yellow-400 flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> NOT CONNECTED</span>
+                    </div>
+                    
+                    <button onclick="connectProvider('together')" 
+                            class="w-full py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors text-sm">
+                        CONNECT
+                    </button>
+                </div>
+
+                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="text-[#00ff9d] text-sm">PROVIDER</div>
+                            <div class="text-2xl font-bold">Fireworks</div>
+                        </div>
+                        <i class="fas fa-fire text-3xl text-orange-400"></i>
+                    </div>
+                    <div class="text-sm text-[#00ff41]/70 mb-4">Fast Llama 3.1 70B</div>
+                    
+                    <div class="flex items-center justify-between text-xs mb-3">
+                        <span>Status</span>
+                        <span class="text-emerald-400 flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> CONNECTED</span>
+                    </div>
+                    
+                    <button onclick="testCloudModel('fireworks')" 
+                            class="w-full py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors text-sm">
+                        TEST CONNECTION
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="text-center mt-8 text-[#00ff41]/50 text-sm">
-            Notes are saved in your browser. Click "PUSH TO GITHUB" on any note to send it to the repo.
+        <!-- REGIONS -->
+        <div id="regions" class="mb-16">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-globe text-3xl text-[#00ff9d]"></i>
+                <span class="text-4xl font-bold">BRAIN REGIONS</span>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div onclick="activateRegion(this, 'prefrontal')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                    <i class="fas fa-lightbulb text-4xl mb-3 text-yellow-400"></i>
+                    <div class="font-bold">PREFRONTAL</div>
+                    <div class="text-xs text-[#00ff41]/60">Planning • Reasoning</div>
+                </div>
+                <div onclick="activateRegion(this, 'hippocampus')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                    <i class="fas fa-memory text-4xl mb-3 text-blue-400"></i>
+                    <div class="font-bold">HIPPOCAMPUS</div>
+                    <div class="text-xs text-[#00ff41]/60">Memory • Context</div>
+                </div>
+                <div onclick="activateRegion(this, 'amygdala')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                    <i class="fas fa-heart text-4xl mb-3 text-red-400"></i>
+                    <div class="font-bold">AMYGDALA</div>
+                    <div class="text-xs text-[#00ff41]/60">Priority • Emotion</div>
+                </div>
+                <div onclick="activateRegion(this, 'visual')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                    <i class="fas fa-eye text-4xl mb-3 text-purple-400"></i>
+                    <div class="font-bold">VISUAL</div>
+                    <div class="text-xs text-[#00ff41]/60">Spatial • Vision</div>
+                </div>
+                <div onclick="activateRegion(this, 'language')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                    <i class="fas fa-comments text-4xl mb-3 text-cyan-400"></i>
+                    <div class="font-bold">LANGUAGE</div>
+                    <div class="text-xs text-[#00ff41]/60">Nuance • Text</div>
+                </div>
+                <div onclick="activateRegion(this, 'motor')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                    <i class="fas fa-hand-paper text-4xl mb-3 text-green-400"></i>
+                    <div class="font-bold">MOTOR</div>
+                    <div class="text-xs text-[#00ff41]/60">Action • Output</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NODES -->
+        <div id="nodes" class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
+                    <span class="text-4xl font-bold">NEURAL NODES</span>
+                </div>
+                <button onclick="spawnNode()" class="px-5 py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 text-sm flex items-center gap-2">
+                    <i class="fas fa-plus"></i> <span>SPAWN NODE</span>
+                </button>
+            </div>
+            
+            <div id="nodes-container" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
+
+        <!-- PATHWAYS -->
+        <div id="pathways">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-link text-3xl text-[#00ff9d]"></i>
+                <span class="text-4xl font-bold">PATHWAYS</span>
+            </div>
+            
+            <div class="terminal-window bg-black p-8 border border-[#00ff41]/40 text-center">
+                <div class="text-[#00ff41]/60 mb-4">Pathway visualization coming in next build</div>
+                <div class="flex justify-center gap-4">
+                    <div class="px-4 py-2 bg-black border border-[#00ff41]/40 rounded text-sm">Prefrontal → Hippocampus</div>
+                    <div class="px-4 py-2 bg-black border border-[#00ff41]/40 rounded text-sm">Amygdala → Motor</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -79,139 +243,101 @@
         function createMatrixRain() {
             const canvas = document.getElementById('matrix');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-            const fontSize = 13;
-            const columns = Math.floor(canvas.width / fontSize);
-            const drops = Array(columns).fill(1);
-            
+            const fontSize = 12; const columns = Math.floor(canvas.width / fontSize); const drops = Array(columns).fill(1);
             function draw() {
-                ctx.fillStyle = 'rgba(5, 5, 5, 0.08)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#00ff41';
-                ctx.font = fontSize + 'px monospace';
+                ctx.fillStyle = 'rgba(5, 5, 5, 0.06)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41'; ctx.font = fontSize + 'px monospace';
                 for (let i = 0; i < drops.length; i++) {
                     ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.97) drops[i] = 0;
                     drops[i]++;
                 }
             }
-            setInterval(draw, 55);
+            setInterval(draw, 60);
         }
 
-        let notes = [];
-
-        function loadNotes() {
-            const saved = localStorage.getItem('sudotek_notes');
-            if (saved) notes = JSON.parse(saved);
-            else {
-                notes = [
-                    { id: '001', content: 'Brain Regions: Prefrontal, Hippocampus, Amygdala, Visual, Language, Motor — each with mini-LLMs', timestamp: Date.now() - 100000 },
-                    { id: '002', content: 'Neural Nodes: Self-contained mini-LLMs with activation state + weighted connections', timestamp: Date.now() - 90000 },
-                    { id: '003', content: 'Pathway Propagation: Nodes fire and send activation signals (0-1) to connected nodes, creating organic thought chains', timestamp: Date.now() - 80000 }
-                ];
-                saveNotes();
-            }
-            renderNotes();
+        function activateRegion(el, region) {
+            el.style.borderColor = '#00ff9d';
+            el.style.boxShadow = '0 0 25px rgba(0, 255, 157, 0.4)';
+            
+            setTimeout(() => {
+                el.style.borderColor = '#00ff41';
+                el.style.boxShadow = 'none';
+            }, 800);
+            
+            console.log(`[SUDOTEK] Region activated: ${region}`);
         }
 
-        function saveNotes() {
-            localStorage.setItem('sudotek_notes', JSON.stringify(notes));
-            document.getElementById('note-count').innerHTML = `${notes.length} notes`;
+        let nodeCount = 0;
+        function spawnNode() {
+            const container = document.getElementById('nodes-container');
+            nodeCount++;
+            
+            const node = document.createElement('div');
+            node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center cursor-pointer`;
+            node.innerHTML = `
+                <div class="text-[#00ff9d] text-xs mb-1">NODE-${String(nodeCount).padStart(3, '0')}</div>
+                <div class="font-bold mb-2">Mini-LLM</div>
+                <div class="text-xs text-[#00ff41]/60 mb-3">Llama 3.1 8B</div>
+                <div class="flex justify-center gap-2">
+                    <button onclick="fireNode(this)" class="px-3 py-1 text-xs border border-[#00ff41]/60 hover:bg-[#00ff41]/10">FIRE</button>
+                    <button onclick="removeNode(this)" class="px-3 py-1 text-xs border border-red-400/60 hover:bg-red-400/10 text-red-400">KILL</button>
+                </div>
+            `;
+            container.appendChild(node);
         }
 
-        function renderNotes() {
-            const container = document.getElementById('notes-list');
-            container.innerHTML = '';
-            
-            if (notes.length === 0) {
-                container.innerHTML = `<div class="px-6 py-12 text-center text-[#00ff41]/60">No notes yet. Type above and press ADD.</div>`;
-                return;
-            }
-            
-            notes.sort((a, b) => b.timestamp - a.timestamp).forEach((note, index) => {
-                const row = document.createElement('div');
-                row.className = `px-6 py-4 flex items-start gap-4 group border-b border-[#00ff41]/20 last:border-0`;
-                
-                row.innerHTML = `
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-1">
-                            <span class="text-[#00ff9d] text-xs tracking-widest">NOTE-${note.id}</span>
-                            <span class="text-xs text-[#00ff41]/50">${new Date(note.timestamp).toLocaleDateString()}</span>
-                        </div>
-                        <div class="text-lg leading-tight">${note.content}</div>
-                    </div>
-                    
-                    <div class="flex flex-col gap-2 opacity-40 group-hover:opacity-100 transition-all">
-                        <button onclick="pushNoteToGitHub(${index})" 
-                                class="px-4 py-1.5 bg-[#00ff41] text-black text-xs hover:bg-white transition-all flex items-center gap-1">
-                            <i class="fas fa-upload"></i> <span>PUSH TO GITHUB</span>
-                        </button>
-                        <button onclick="deleteNote(${index})" class="px-3 py-1 text-red-400 hover:text-red-500 text-xs">
-                            DELETE
-                        </button>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
+        function fireNode(btn) {
+            const node = btn.closest('.node');
+            node.classList.add('firing');
+            setTimeout(() => node.classList.remove('firing'), 700);
+            console.log('[SUDOTEK] Node fired');
         }
 
-        function addQuickNote() {
-            const input = document.getElementById('quick-input');
-            const value = input.value.trim();
-            if (!value) return;
-            
-            const newNote = {
-                id: Date.now().toString().slice(-6),
-                content: value,
-                timestamp: Date.now()
-            };
-            
-            notes.unshift(newNote);
-            saveNotes();
-            renderNotes();
-            input.value = '';
+        function removeNode(btn) {
+            btn.closest('.node').remove();
         }
 
-        function pushNoteToGitHub(index) {
-            const note = notes[index];
-            const filename = `note-${note.id}.md`;
+        function testCloudModel(provider) {
+            const btn = event.currentTarget;
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> TESTING...`;
             
-            const content = `## ${note.content}
-
----
-*Note ID: ${note.id} | Created: ${new Date(note.timestamp).toISOString()}*`;
-            
-            const message = `Add note ${note.id} to SUDOTEK`;
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(content).then(() => {
-                alert(`Note copied!\n\nNow tell me in chat:\n"push note ${note.id} to the repo"`);
-            }).catch(() => {
-                prompt('Copy this and send to me:', content);
-            });
+            setTimeout(() => {
+                alert(`${provider.toUpperCase()} connection successful!\nLatency: 87ms\nModel: Llama 3.1 8B`);
+                event.target.innerHTML = originalText;
+            }, 1200);
         }
 
-        function deleteNote(index) {
-            if (!confirm('Delete this note?')) return;
-            notes.splice(index, 1);
-            saveNotes();
-            renderNotes();
+        function connectProvider(provider) {
+            alert(`Connecting to ${provider}...\n(Coming soon — will use real API keys)`);
         }
 
         function initialize() {
             createMatrixRain();
-            loadNotes();
             
-            document.addEventListener('keydown', e => {
-                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
-                    e.preventDefault();
-                    document.getElementById('quick-input').focus();
+            // Spawn 3 starter nodes
+            setTimeout(() => {
+                const container = document.getElementById('nodes-container');
+                for (let i = 0; i < 3; i++) {
+                    const node = document.createElement('div');
+                    node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center cursor-pointer`;
+                    node.innerHTML = `
+                        <div class="text-[#00ff9d] text-xs mb-1">NODE-00${i+1}</div>
+                        <div class="font-bold mb-2">Mini-LLM</div>
+                        <div class="text-xs text-[#00ff41]/60 mb-3">Llama 3.1 8B</div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="fireNode(this)" class="px-3 py-1 text-xs border border-[#00ff41]/60 hover:bg-[#00ff41]/10">FIRE</button>
+                            <button onclick="removeNode(this)" class="px-3 py-1 text-xs border border-red-400/60 hover:bg-red-400/10 text-red-400">KILL</button>
+                        </div>
+                    `;
+                    container.appendChild(node);
                 }
-            });
+            }, 800);
             
-            console.log('%c[SUDOTEK] Notes system ready.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.1] Neural brain environment initialized.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
