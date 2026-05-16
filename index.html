@@ -1,10 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hello Bros</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORLD-IO // ACCESS GRANTED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff41;
+            overflow-x: hidden;
+        }
+        
+        .crt {
+            position: relative;
+        }
+        
+        .crt::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 255, 65, 0.03) 2px,
+                rgba(0, 255, 65, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+            animation: scanline 4s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch:hover {
+            animation: glitch 0.3s linear infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff; }
+            100% { text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff; }
+        }
+        
+        .terminal-header {
+            animation: typing 3.5s steps(40, end) forwards;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    </style>
 </head>
-<body>
-    <h1>Hello Bros!</h1>
-    <p>This is a simple GitHub Pages site.</p>
+<body class="min-h-screen crt">
+    <div class="max-w-4xl mx-auto p-8">
+        <!-- Header -->
+        <div class="border border-[#00ff41]/50 bg-black/80 p-6 mb-12 backdrop-blur-md">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-terminal text-3xl"></i>
+                <div>
+                    <h1 class="text-5xl glitch terminal-header">WORLD-IO v0.1</h1>
+                    <p class="text-[#00ff9d] text-xl">EST. 2026 // SECURE CONNECTION</p>
+                </div>
+            </div>
+            <div class="text-[#00ff41]/70 text-lg">
+                > Hello Bros. System online.
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Card 1 -->
+            <div class="bg-black/70 border border-[#00ff41]/30 p-8 hover:border-[#00ff9d] transition-all duration-300 group">
+                <h2 class="text-3xl mb-4 flex items-center gap-3">
+                    <i class="fas fa-network-wired"></i>
+                    STATUS
+                </h2>
+                <div class="space-y-3 text-lg">
+                    <p><span class="text-[#00ff9d]">●</span> CONNECTED</p>
+                    <p><span class="text-[#00ff9d]">●</span> ENCRYPTION: AES-256</p>
+                    <p><span class="text-[#00ff9d]">●</span> FIREWALL: ACTIVE</p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-black/70 border border-[#00ff41]/30 p-8 hover:border-[#00ff9d] transition-all duration-300 group">
+                <h2 class="text-3xl mb-4 flex items-center gap-3">
+                    <i class="fas fa-code"></i>
+                    MISSION
+                </h2>
+                <p class="text-lg leading-relaxed">
+                    Building the future, one line of code at a time.<br>
+                    Retro roots. Modern edge.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center text-[#00ff41]/60 text-sm">
+            <p>© WORLD-IO • ALL RIGHTS RESERVED • STAY FROSTY</p>
+        </div>
+    </div>
+
+    <script>
+        // Optional subtle matrix rain in background if you want to amp it up later
+        console.log("%cWORLD-IO initialized. Welcome, operator.", "color: #00ff41; font-family: monospace;");
+    </script>
 </body>
 </html>
