@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORLD-IO // SECURE TERMINAL v2.0</title>
+    <title>WORLD-IO // NEURAL ARCHITECTURE v3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-        
-        :root {
-            --neon-green: #00ff41;
-            --neon-cyan: #00f9ff;
-        }
         
         body {
             font-family: 'VT323', 'Courier New', monospace;
@@ -21,153 +16,49 @@
             overflow-x: hidden;
         }
         
-        .crt {
-            position: relative;
-        }
-        
         .crt::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(rgba(0, 255, 65, 0.015) 50%, transparent 50%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0, 255, 65, 0.015) 50%, transparent 50%);
             background-size: 100% 3px;
             pointer-events: none;
             z-index: 1;
         }
         
-        .neon-text {
-            text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41;
-        }
+        .neon-text { text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41; }
         
         .terminal-window {
-            box-shadow: 
-                0 0 60px rgba(0, 255, 65, 0.2),
-                inset 0 0 80px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 60px rgba(0, 255, 65, 0.2), inset 0 0 80px rgba(0, 0, 0, 0.9);
             border: 2px solid #00ff41;
         }
         
-        .section-header {
-            position: relative;
-            display: inline-block;
-        }
-        
+        .section-header { position: relative; display: inline-block; }
         .section-header::after {
             content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 2px;
+            position: absolute; bottom: -4px; left: 0;
+            width: 100%; height: 2px;
             background: linear-gradient(to right, #00ff41, transparent);
         }
         
-        .project-card {
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 40%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(0, 255, 65, 0.3),
-                transparent
-            );
-            transition: 0.7s;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            border-color: #00ff9d;
-            box-shadow: 0 0 40px rgba(0, 255, 157, 0.3);
-        }
-        
-        .project-card:hover::before {
-            left: 250%;
-        }
-        
-        .nav-link {
-            transition: all 0.2s ease;
-            position: relative;
-        }
-        
-        .nav-link:hover {
-            color: #00ff9d;
-        }
-        
+        .nav-link { transition: all 0.2s ease; position: relative; }
+        .nav-link:hover { color: #00ff9d; }
         .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: #00ff41;
-            transition: width 0.3s ease;
+            content: ''; position: absolute; bottom: -2px; left: 0;
+            width: 0; height: 1px; background: #00ff41; transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        
+        .note-card {
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .note-card:hover {
+            transform: translateY(-4px);
+            border-color: #00ff9d;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.25);
         }
         
-        .nav-link:hover::after {
-            width: 100%;
-        }
-        
-        .skill-bar {
-            height: 6px;
-            background: #112211;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        
-        .skill-fill {
-            height: 100%;
-            background: linear-gradient(to right, #00ff41, #00ff9d);
-            transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 12px #00ff41;
-        }
-        
-        .terminal-input {
-            background: transparent;
-            border: none;
-            color: #00ff41;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            outline: none;
-            width: 100%;
-        }
-        
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.06;
-            pointer-events: none;
-        }
-        
-        .glitch {
-            animation: glitch 0.6s linear infinite alternate;
-        }
-        
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
+        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.06; pointer-events: none; }
     </style>
 </head>
 <body class="min-h-screen crt text-[#00ff41]">
@@ -185,6 +76,7 @@
                 <a href="#about" class="nav-link">ABOUT</a>
                 <a href="#projects" class="nav-link">PROJECTS</a>
                 <a href="#skills" class="nav-link">SKILLS</a>
+                <a href="#notes" class="nav-link">NOTES</a>
                 <a href="#terminal" class="nav-link">TERMINAL</a>
                 <a href="#contact" class="nav-link">CONTACT</a>
             </div>
@@ -193,10 +85,8 @@
                     <div class="w-2 h-2 bg-[#00ff41] rounded-full animate-pulse"></div>
                     <span class="text-[#00ff9d]">ONLINE</span>
                 </div>
-                <button onclick="bootSequence()" 
-                        class="px-4 py-1.5 text-sm border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors flex items-center gap-2">
-                    <i class="fas fa-power-off"></i>
-                    <span>REBOOT</span>
+                <button onclick="bootSequence()" class="px-4 py-1.5 text-sm border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors flex items-center gap-2">
+                    <i class="fas fa-power-off"></i><span>REBOOT</span>
                 </button>
             </div>
         </div>
@@ -207,29 +97,24 @@
         <div class="max-w-5xl mx-auto px-8 text-center">
             <div class="mb-8 flex justify-center">
                 <div class="inline-flex items-center gap-3 px-6 py-2 bg-black border border-[#00ff41]/40 rounded-full">
-                    <i class="fas fa-satellite text-[#00ff9d]"></i>
-                    <span class="text-sm tracking-[4px] text-[#00ff9d]">SECURE NODE • 2026</span>
+                    <i class="fas fa-brain text-[#00ff9d]"></i>
+                    <span class="text-sm tracking-[4px] text-[#00ff9d]">NEURAL ARCHITECTURE v3.0 • 2026</span>
                 </div>
             </div>
             
-            <h1 class="text-[90px] md:text-[120px] leading-none font-bold tracking-[-4px] neon-text mb-6">
-                HELLO BROS
-            </h1>
+            <h1 class="text-[90px] md:text-[120px] leading-none font-bold tracking-[-4px] neon-text mb-6">HELLO BROS</h1>
             
             <div class="text-4xl md:text-5xl mb-12 text-[#00ff9d]">
                 <span id="typing-text"></span><span class="animate-pulse">_</span>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="#projects" 
-                   class="group px-10 py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all flex items-center gap-3 text-xl">
-                    <span>ENTER THE GRID</span>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#notes" class="group px-10 py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all flex items-center gap-3 text-xl">
+                    <span>START ARCHITECTING</span>
                     <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </a>
-                <a href="#terminal" 
-                   class="px-8 py-4 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-all flex items-center gap-3 text-xl">
-                    <i class="fas fa-terminal"></i>
-                    <span>OPEN TERMINAL</span>
+                <a href="#terminal" class="px-8 py-4 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-all flex items-center gap-3 text-xl">
+                    <i class="fas fa-terminal"></i><span>OPEN TERMINAL</span>
                 </a>
             </div>
         </div>
@@ -244,490 +129,463 @@
     <section id="about" class="max-w-5xl mx-auto px-8 py-24">
         <div class="grid md:grid-cols-12 gap-12 items-center">
             <div class="md:col-span-7">
-                <div class="section-header mb-8">
-                    <span class="text-5xl font-bold">// ABOUT THE OPERATOR</span>
-                </div>
-                
+                <div class="section-header mb-8"><span class="text-5xl font-bold">// THE VISION</span></div>
                 <div class="space-y-6 text-[22px] leading-tight text-[#00ff41]/90">
-                    <p>World-IO is a digital playground built by a lone hacker in the neon-lit depths of 2026.</p>
-                    <p>Blending retro terminal aesthetics with bleeding-edge web technologies to create experiences that feel both nostalgic and futuristic.</p>
-                    <p class="text-[#00ff9d]">Current status: Online • Building the future one commit at a time.</p>
+                    <p>World-IO is evolving into a <span class="text-[#00ff9d]">neural context architecture</span> for AI — a brain-inspired system where specialized mini-LLMs (neural nodes) are queried before the main model to build rich, structured context.</p>
+                    <p>Nodes connect organically like biological neurons, propagating activation states to create emergent thought pathways.</p>
                 </div>
             </div>
-            
             <div class="md:col-span-5">
                 <div class="terminal-window bg-black p-8 text-lg">
-                    <div class="flex items-center gap-2 mb-6 text-[#00ff9d]">
-                        <i class="fas fa-user-secret"></i>
-                        <span>OPERATOR PROFILE</span>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="flex justify-between border-b border-[#00ff41]/20 pb-2">
-                            <span class="opacity-70">ALIAS</span>
-                            <span class="font-bold">WJB000</span>
-                        </div>
-                        <div class="flex justify-between border-b border-[#00ff41]/20 pb-2">
-                            <span class="opacity-70">CLEARANCE</span>
-                            <span class="font-bold text-[#00ff9d]">LEVEL 7</span>
-                        </div>
-                        <div class="flex justify-between border-b border-[#00ff41]/20 pb-2">
-                            <span class="opacity-70">SPECIALTY</span>
-                            <span class="font-bold">CYBER AESTHETICS</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="opacity-70">LOCATION</span>
-                            <span class="font-bold">THE GRID</span>
-                        </div>
-                    </div>
+                    <div class="flex items-center gap-2 mb-6 text-[#00ff9d]"><i class="fas fa-brain"></i><span>CORE PRINCIPLE</span></div>
+                    <div class="text-[#00ff41]/90">"Query the brain before asking the mind."</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="bg-black/60 py-24 border-y border-[#00ff41]/20">
+    <!-- NOTES SECTION - THE MAIN FEATURE -->
+    <section id="notes" class="bg-black/60 py-24 border-y border-[#00ff41]/20">
         <div class="max-w-6xl mx-auto px-8">
-            <div class="flex items-end justify-between mb-12">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-6">
                 <div>
-                    <div class="section-header">
-                        <span class="text-5xl font-bold">// PROJECT ARCHIVE</span>
-                    </div>
-                    <p class="text-[#00ff41]/70 mt-3 text-xl">Selected works from the vault</p>
+                    <div class="section-header"><span class="text-5xl font-bold">// ARCHITECTURE NOTES</span></div>
+                    <p class="text-[#00ff41]/70 mt-3 text-xl">Living documentation of our neural brain design. Add ideas freely — they sync to the repo.</p>
                 </div>
-                <a href="#" class="hidden md:flex items-center gap-2 text-[#00ff9d] hover:text-white transition-colors">
-                    VIEW ALL <i class="fas fa-external-link-alt ml-1"></i>
-                </a>
+                <div class="flex items-center gap-4">
+                    <div class="px-4 py-2 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm flex items-center gap-2">
+                        <i class="fas fa-sync-alt"></i> <span id="sync-status">3 notes synced</span>
+                    </div>
+                    <button onclick="showAddNoteModal()" 
+                            class="px-6 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all flex items-center gap-2 text-lg">
+                        <i class="fas fa-plus"></i> <span>NEW NOTE</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes Grid -->
+            <div id="notes-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            <!-- Sync Controls -->
+            <div class="mt-12 text-center">
+                <button onclick="showSyncModal()" 
+                        class="px-8 py-4 bg-black border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all text-lg flex items-center gap-3 mx-auto">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>PUSH LOCAL NOTES TO REPOSITORY</span>
+                </button>
+                <p class="text-xs text-[#00ff41]/50 mt-3">Notes you add here are saved locally. Use the button above to prepare them for repo sync.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Note Modal -->
+    <div id="add-note-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[100]">
+        <div class="terminal-window bg-black w-full max-w-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-3xl">NEW ARCHITECTURE NOTE</h3>
+                <button onclick="hideAddNoteModal()" class="text-2xl hover:text-[#00ff9d]">&times;</button>
             </div>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Project 1 -->
-                <div class="project-card terminal-window bg-black p-8 border border-[#00ff41]/40">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <div class="text-[#00ff9d] text-sm tracking-[2px]">2025</div>
-                            <h3 class="text-4xl font-bold mt-1">NEON OS</h3>
-                        </div>
-                        <i class="fas fa-desktop text-4xl opacity-30"></i>
-                    </div>
-                    <p class="text-lg mb-6 text-[#00ff41]/80">A fully functional retro-futuristic operating system simulation built entirely in the browser.</p>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">HTML5</span>
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">CANVAS</span>
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">JS</span>
-                    </div>
-                    <a href="#" class="inline-flex items-center gap-2 text-sm hover:text-[#00ff9d] transition-colors">
-                        LAUNCH SIMULATION <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm mb-2 text-[#00ff9d]">NOTE TITLE</label>
+                    <input id="note-title" type="text" class="w-full bg-black border border-[#00ff41]/50 px-5 py-3 text-lg focus:outline-none focus:border-[#00ff9d]" placeholder="e.g. Attention Mechanism Idea">
                 </div>
-                
-                <!-- Project 2 -->
-                <div class="project-card terminal-window bg-black p-8 border border-[#00ff41]/40">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <div class="text-[#00ff9d] text-sm tracking-[2px]">2026</div>
-                            <h3 class="text-4xl font-bold mt-1">GRID RUNNER</h3>
-                        </div>
-                        <i class="fas fa-gamepad text-4xl opacity-30"></i>
-                    </div>
-                    <p class="text-lg mb-6 text-[#00ff41]/80">Cyberpunk endless runner with procedural neon cityscapes and dynamic soundtrack.</p>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">THREE.JS</span>
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">WEBGL</span>
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">HOWLER</span>
-                    </div>
-                    <a href="#" class="inline-flex items-center gap-2 text-sm hover:text-[#00ff9d] transition-colors">
-                        PLAY DEMO <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+                <div>
+                    <label class="block text-sm mb-2 text-[#00ff9d]">CONTENT / IDEA</label>
+                    <textarea id="note-content" rows="8" class="w-full bg-black border border-[#00ff41]/50 px-5 py-3 text-lg focus:outline-none focus:border-[#00ff9d] resize-y" placeholder="Describe your architecture idea in detail..."></textarea>
                 </div>
-                
-                <!-- Project 3 -->
-                <div class="project-card terminal-window bg-black p-8 border border-[#00ff41]/40">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <div class="text-[#00ff9d] text-sm tracking-[2px]">2024</div>
-                            <h3 class="text-4xl font-bold mt-1">VOID PROTOCOL</h3>
-                        </div>
-                        <i class="fas fa-link text-4xl opacity-30"></i>
-                    </div>
-                    <p class="text-lg mb-6 text-[#00ff41]/80">Decentralized identity verification system with zero-knowledge proofs and retro UI.</p>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">SOLIDITY</span>
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">WEB3</span>
-                        <span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">TAILWIND</span>
-                    </div>
-                    <a href="#" class="inline-flex items-center gap-2 text-sm hover:text-[#00ff9d] transition-colors">
-                        VIEW WHITEPAPER <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+            </div>
+            
+            <div class="flex gap-4 mt-8">
+                <button onclick="hideAddNoteModal()" class="flex-1 py-3 border border-[#00ff41]/50 hover:bg-[#00ff41]/10 transition-colors">CANCEL</button>
+                <button onclick="addNewNote()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE NOTE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Modal -->
+    <div id="sync-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[100]">
+        <div class="terminal-window bg-black w-full max-w-2xl p-8">
+            <h3 class="text-3xl mb-6 flex items-center gap-3"><i class="fas fa-cloud-upload-alt"></i> SYNC TO REPOSITORY</h3>
+            
+            <div class="mb-6">
+                <p class="text-[#00ff41]/80 mb-4">The following notes are ready to be pushed as files in <span class="font-bold">/notes/</span>:</p>
+                <div id="sync-notes-list" class="bg-black/60 border border-[#00ff41]/30 p-4 text-sm max-h-60 overflow-auto font-mono"></div>
+            </div>
+            
+            <div class="bg-[#00ff41]/10 border border-[#00ff41]/40 p-4 text-sm mb-6">
+                <strong>Next step:</strong> Click the button below, then tell me in chat:<br>
+                <span class="font-bold">"push these notes to the repo"</span>
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="hideSyncModal()" class="flex-1 py-3 border border-[#00ff41]/50 hover:bg-[#00ff41]/10">CLOSE</button>
+                <button onclick="prepareNotesForSync()" class="flex-1 py-3 border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">COPY NOTES FOR SYNC</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other sections (Projects, Skills, Terminal, Contact) remain the same but with updated copy -->
+    <!-- Projects Section -->
+    <section id="projects" class="max-w-6xl mx-auto px-8 py-24">
+        <div class="flex items-end justify-between mb-12">
+            <div>
+                <div class="section-header"><span class="text-5xl font-bold">// PROJECT ARCHIVE</span></div>
+                <p class="text-[#00ff41]/70 mt-3 text-xl">Experiments in neural systems</p>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="project-card terminal-window bg-black p-8 border border-[#00ff41]/40">
+                <div class="flex justify-between items-start mb-6">
+                    <div><div class="text-[#00ff9d] text-sm tracking-[2px]">2026</div><h3 class="text-4xl font-bold mt-1">NEURAL NODE ENGINE</h3></div>
+                    <i class="fas fa-project-diagram text-4xl opacity-30"></i>
                 </div>
+                <p class="text-lg mb-6 text-[#00ff41]/80">Core engine for spawning, connecting, and propagating state between neural nodes.</p>
+                <div class="flex flex-wrap gap-2"><span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">PYTHON</span><span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">GRAPH</span></div>
+            </div>
+            <div class="project-card terminal-window bg-black p-8 border border-[#00ff41]/40">
+                <div class="flex justify-between items-start mb-6">
+                    <div><div class="text-[#00ff9d] text-sm tracking-[2px]">IN PROGRESS</div><h3 class="text-4xl font-bold mt-1">BRAIN REGION SIM</h3></div>
+                    <i class="fas fa-brain text-4xl opacity-30"></i>
+                </div>
+                <p class="text-lg mb-6 text-[#00ff41]/80">Interactive simulation of the 6 core brain regions with live node activation visualization.</p>
+                <div class="flex flex-wrap gap-2"><span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">THREE.JS</span><span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">WEBGL</span></div>
+            </div>
+            <div class="project-card terminal-window bg-black p-8 border border-[#00ff41]/40">
+                <div class="flex justify-between items-start mb-6">
+                    <div><div class="text-[#00ff9d] text-sm tracking-[2px]">PLANNED</div><h3 class="text-4xl font-bold mt-1">CONTEXT ORCHESTRATOR</h3></div>
+                    <i class="fas fa-robot text-4xl opacity-30"></i>
+                </div>
+                <p class="text-lg mb-6 text-[#00ff41]/80">The layer that queries relevant nodes before calling the main LLM and assembles the final context packet.</p>
+                <div class="flex flex-wrap gap-2"><span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">FASTAPI</span><span class="px-3 py-1 text-xs bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">LLM</span></div>
             </div>
         </div>
     </section>
 
     <!-- Skills Section -->
-    <section id="skills" class="max-w-5xl mx-auto px-8 py-24">
-        <div class="mb-16">
-            <div class="section-header mb-4">
-                <span class="text-5xl font-bold">// SKILL MATRIX</span>
-            </div>
-            <p class="text-xl text-[#00ff41]/70">Mastered protocols and current loadouts</p>
-        </div>
-        
-        <div class="grid md:grid-cols-2 gap-x-16 gap-y-10">
-            <div>
-                <div class="flex justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-code text-[#00ff9d]"></i>
-                        <span class="text-2xl">FRONTEND ARCHITECTURE</span>
-                    </div>
-                    <span class="font-mono text-[#00ff9d]">98%</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill w-[98%]"></div></div>
-            </div>
-            
-            <div>
-                <div class="flex justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-server text-[#00ff9d]"></i>
-                        <span class="text-2xl">BACKEND SYSTEMS</span>
-                    </div>
-                    <span class="font-mono text-[#00ff9d]">92%</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill w-[92%]"></div></div>
-            </div>
-            
-            <div>
-                <div class="flex justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-paint-brush text-[#00ff9d]"></i>
-                        <span class="text-2xl">UI/UX & AESTHETICS</span>
-                    </div>
-                    <span class="font-mono text-[#00ff9d]">95%</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill w-[95%]"></div></div>
-            </div>
-            
-            <div>
-                <div class="flex justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-shield-alt text-[#00ff9d]"></i>
-                        <span class="text-2xl">CYBERSECURITY</span>
-                    </div>
-                    <span class="font-mono text-[#00ff9d]">87%</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill w-[87%]"></div></div>
-            </div>
-            
-            <div>
-                <div class="flex justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-robot text-[#00ff9d]"></i>
-                        <span class="text-2xl">AI INTEGRATION</span>
-                    </div>
-                    <span class="font-mono text-[#00ff9d]">84%</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill w-[84%]"></div></div>
-            </div>
-            
-            <div>
-                <div class="flex justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-globe text-[#00ff9d]"></i>
-                        <span class="text-2xl">3D & WEBGL</span>
-                    </div>
-                    <span class="font-mono text-[#00ff9d]">79%</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill w-[79%]"></div></div>
+    <section id="skills" class="bg-black/60 py-24 border-y border-[#00ff41]/20">
+        <div class="max-w-5xl mx-auto px-8">
+            <div class="mb-16"><div class="section-header mb-4"><span class="text-5xl font-bold">// SKILL MATRIX</span></div><p class="text-xl text-[#00ff41]/70">Technologies powering the neural brain</p></div>
+            <div class="grid md:grid-cols-2 gap-x-16 gap-y-10">
+                <div><div class="flex justify-between mb-3"><div class="flex items-center gap-3"><i class="fas fa-brain text-[#00ff9d]"></i><span class="text-2xl">NEURAL GRAPH ENGINE</span></div><span class="font-mono text-[#00ff9d]">92%</span></div><div class="skill-bar"><div class="skill-fill w-[92%]"></div></div></div>
+                <div><div class="flex justify-between mb-3"><div class="flex items-center gap-3"><i class="fas fa-robot text-[#00ff9d]"></i><span class="text-2xl">MINI-LLM ORCHESTRATION</span></div><span class="font-mono text-[#00ff9d]">88%</span></div><div class="skill-bar"><div class="skill-fill w-[88%]"></div></div></div>
+                <div><div class="flex justify-between mb-3"><div class="flex items-center gap-3"><i class="fas fa-project-diagram text-[#00ff9d]"></i><span class="text-2xl">STATE PROPAGATION</span></div><span class="font-mono text-[#00ff9d]">85%</span></div><div class="skill-bar"><div class="skill-fill w-[85%]"></div></div></div>
+                <div><div class="flex justify-between mb-3"><div class="flex items-center gap-3"><i class="fas fa-memory text-[#00ff9d]"></i><span class="text-2xl">CONTEXT ASSEMBLY</span></div><span class="font-mono text-[#00ff9d]">90%</span></div><div class="skill-bar"><div class="skill-fill w-[90%]"></div></div></div>
             </div>
         </div>
     </section>
 
     <!-- Interactive Terminal -->
-    <section id="terminal" class="bg-black py-24 border-y border-[#00ff41]/20">
+    <section id="terminal" class="max-w-4xl mx-auto px-8 py-24">
+        <div class="text-center mb-12"><div class="section-header inline-block mb-4"><span class="text-5xl font-bold">// LIVE TERMINAL</span></div><p class="text-[#00ff41]/70">Type commands. Try: help, nodes, regions, propagate, clear</p></div>
+        <div class="terminal-window bg-black p-8 max-w-[720px] mx-auto">
+            <div class="flex items-center gap-2 mb-4 text-[#00ff9d]"><i class="fas fa-terminal"></i><span class="font-bold">root@world-io:~$</span></div>
+            <div id="terminal-output" class="h-80 overflow-y-auto text-lg mb-4 pr-4 font-light space-y-1"><div class="text-[#00ff9d]">Neural Terminal ready. Type 'help'.</div></div>
+            <div class="flex items-center border-t border-[#00ff41]/30 pt-4"><span class="text-[#00ff9d] mr-2">$</span><input id="terminal-input" type="text" class="terminal-input" placeholder="enter command..." onkeydown="if (event.key === 'Enter') executeCommand()"></div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="bg-black/60 py-24 border-t border-[#00ff41]/20 text-center">
         <div class="max-w-4xl mx-auto px-8">
-            <div class="text-center mb-12">
-                <div class="section-header inline-block mb-4">
-                    <span class="text-5xl font-bold">// LIVE TERMINAL</span>
+            <div class="section-header inline-block mb-4"><span class="text-5xl font-bold">// ESTABLISH CONNECTION</span></div>
+            <p class="text-xl text-[#00ff41]/70 max-w-md mx-auto mb-10">Ready to build the neural brain together? Send a transmission.</p>
+            <form onsubmit="sendMessage(event)" class="max-w-lg mx-auto">
+                <div class="grid grid-cols-1 gap-4">
+                    <input type="text" placeholder="YOUR HANDLE" class="bg-black border border-[#00ff41]/40 px-6 py-4 text-lg focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/40">
+                    <input type="email" placeholder="SECURE EMAIL" class="bg-black border border-[#00ff41]/40 px-6 py-4 text-lg focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/40">
+                    <textarea placeholder="MESSAGE // ARCHITECTURE IDEA" rows="5" class="bg-black border border-[#00ff41]/40 px-6 py-4 text-lg focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/40 resize-y"></textarea>
                 </div>
-                <p class="text-[#00ff41]/70">Type commands below. Try: help, whoami, ls, date, matrix</p>
-            </div>
-            
-            <div class="terminal-window bg-black p-8 max-w-[720px] mx-auto">
-                <div class="flex items-center gap-2 mb-4 text-[#00ff9d]">
-                    <i class="fas fa-terminal"></i>
-                    <span class="font-bold">root@world-io:~$</span>
-                </div>
-                
-                <div id="terminal-output" class="h-80 overflow-y-auto text-lg mb-4 pr-4 font-light space-y-1">
-                    <div class="text-[#00ff9d]">Welcome to WORLD-IO Terminal v2.0</div>
-                    <div class="opacity-70">Type 'help' to see available commands.</div>
-                </div>
-                
-                <div class="flex items-center border-t border-[#00ff41]/30 pt-4">
-                    <span class="text-[#00ff9d] mr-2">$</span>
-                    <input id="terminal-input" type="text" class="terminal-input" placeholder="enter command..." 
-                           onkeydown="if (event.key === 'Enter') executeCommand()">
-                </div>
-            </div>
+                <button type="submit" class="mt-6 w-full py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all text-xl flex items-center justify-center gap-3">
+                    <span>TRANSMIT TO THE GRID</span> <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="max-w-4xl mx-auto px-8 py-24 text-center">
-        <div class="mb-12">
-            <div class="section-header inline-block mb-4">
-                <span class="text-5xl font-bold">// ESTABLISH CONNECTION</span>
-            </div>
-            <p class="text-xl text-[#00ff41]/70 max-w-md mx-auto">Ready to collaborate on the next big hack? Send a secure transmission.</p>
-        </div>
-        
-        <form onsubmit="sendMessage(event)" class="max-w-lg mx-auto">
-            <div class="grid grid-cols-1 gap-4">
-                <input type="text" placeholder="YOUR HANDLE" 
-                       class="bg-black border border-[#00ff41]/40 px-6 py-4 text-lg focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/40">
-                
-                <input type="email" placeholder="SECURE EMAIL" 
-                       class="bg-black border border-[#00ff41]/40 px-6 py-4 text-lg focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/40">
-                
-                <textarea placeholder="MESSAGE // ENCRYPTED" rows="5"
-                          class="bg-black border border-[#00ff41]/40 px-6 py-4 text-lg focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/40 resize-y"></textarea>
-            </div>
-            
-            <button type="submit"
-                    class="mt-6 w-full py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all text-xl flex items-center justify-center gap-3">
-                <span>TRANSMIT MESSAGE</span>
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </form>
-        
-        <div class="mt-12 flex justify-center gap-8 text-3xl">
-            <a href="#" class="hover:text-[#00ff9d] transition-colors"><i class="fab fa-github"></i></a>
-            <a href="#" class="hover:text-[#00ff9d] transition-colors"><i class="fab fa-x-twitter"></i></a>
-            <a href="#" class="hover:text-[#00ff9d] transition-colors"><i class="fab fa-linkedin"></i></a>
-            <a href="#" class="hover:text-[#00ff9d] transition-colors"><i class="fas fa-envelope"></i></a>
-        </div>
-    </section>
-
-    <!-- Footer -->
     <footer class="bg-black border-t border-[#00ff41]/20 py-8 text-center text-sm opacity-60">
         <div class="max-w-5xl mx-auto px-8">
-            <p>© 2026 WORLD-IO • ALL RIGHTS RESERVED • UNAUTHORIZED ACCESS WILL BE TRACED</p>
-            <p class="mt-2 text-xs">BUILT WITH ❤️ AND A LOT OF COFFEE • POWERED BY PURE VIBES</p>
+            <p>© 2026 WORLD-IO • NEURAL ARCHITECTURE LAB • ALL RIGHTS RESERVED</p>
+            <p class="mt-2 text-xs">BUILT WITH ❤️ + COFFEE • POWERED BY PURE VIBES + BIOLOGICAL INSPIRATION</p>
         </div>
     </footer>
 
     <script>
-        // Tailwind script
-        function initializeTailwind() {
-            document.documentElement.style.setProperty('--accent', '#00ff41');
-        }
-        
-        // Typing effect for hero
-        function startTyping() {
-            const textElement = document.getElementById('typing-text');
-            const phrases = [
-                'RETRO FUTURE IS NOW',
-                'WELCOME TO THE GRID',
-                'HACK THE PLANET',
-                'NEON DREAMS LOADING...'
-            ];
-            let phraseIndex = 0;
-            let charIndex = 0;
-            let isDeleting = false;
-            
-            function type() {
-                const currentPhrase = phrases[phraseIndex];
-                
-                if (isDeleting) {
-                    textElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                    charIndex--;
-                } else {
-                    textElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                    charIndex++;
-                }
-                
-                let typeSpeed = isDeleting ? 40 : 90;
-                
-                if (!isDeleting && charIndex === currentPhrase.length) {
-                    typeSpeed = 2200;
-                    isDeleting = true;
-                } else if (isDeleting && charIndex === 0) {
-                    isDeleting = false;
-                    phraseIndex = (phraseIndex + 1) % phrases.length;
-                    typeSpeed = 600;
-                }
-                
-                setTimeout(type, typeSpeed);
-            }
-            
-            setTimeout(type, 800);
-        }
-        
-        // Matrix rain effect
+        // Matrix rain
         function createMatrixRain() {
             const canvas = document.getElementById('matrix');
             const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-            const fontSize = 13;
-            const columns = Math.floor(canvas.width / fontSize);
-            const drops = Array(columns).fill(1);
-            
+            const fontSize = 13; const columns = Math.floor(canvas.width / fontSize); const drops = Array(columns).fill(1);
             function draw() {
-                ctx.fillStyle = 'rgba(5, 5, 5, 0.08)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.fillStyle = '#00ff41';
-                ctx.font = fontSize + 'px monospace';
-                
+                ctx.fillStyle = 'rgba(5, 5, 5, 0.08)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41'; ctx.font = fontSize + 'px monospace';
                 for (let i = 0; i < drops.length; i++) {
-                    const text = chars[Math.floor(Math.random() * chars.length)];
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                    
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        drops[i] = 0;
-                    }
+                    ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                     drops[i]++;
                 }
             }
-            
             setInterval(draw, 55);
+            window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        }
+
+        // Typing effect
+        function startTyping() {
+            const el = document.getElementById('typing-text');
+            const phrases = ['RETRO NEURAL FUTURE', 'BUILDING THE BRAIN', 'NODES CONNECTING...', 'THOUGHT PATHWAYS LIVE'];
+            let i = 0, j = 0, deleting = false;
+            function type() {
+                const p = phrases[i];
+                el.textContent = deleting ? p.substring(0, j-1) : p.substring(0, j+1);
+                j = deleting ? j-1 : j+1;
+                let speed = deleting ? 40 : 90;
+                if (!deleting && j === p.length) { speed = 1800; deleting = true; }
+                else if (deleting && j === 0) { deleting = false; i = (i+1) % phrases.length; speed = 500; }
+                setTimeout(type, speed);
+            }
+            setTimeout(type, 800);
+        }
+
+        // Notes System
+        let notes = [];
+
+        function loadNotes() {
+            const saved = localStorage.getItem('worldio_notes');
+            if (saved) notes = JSON.parse(saved);
+            else {
+                // Seed with initial repo notes
+                notes = [
+                    { id: '001', title: 'Brain Regions Architecture', content: 'The system is divided into specialized brain-like regions: Prefrontal (planning), Hippocampus (memory), Amygdala (priority), Visual Cortex, Language Cortex, Motor/Executive. Each region contains clusters of neural nodes with specialized mini-LLMs.', timestamp: Date.now() - 100000 },
+                    { id: '002', title: 'Neural Nodes Core Concept', content: 'Each Neural Node is a self-contained mini-LLM with specialized system prompt, local context, activation state (on/off/firing), and weighted connections to other nodes. Lifecycle: Query → Activate relevant nodes → Process → Output thought fragment → Propagate state.', timestamp: Date.now() - 90000 },
+                    { id: '003', title: 'Pathway Propagation', content: 'Nodes form a directed graph. When a node fires, it sends activation signal (0.0-1.0) + content to connected nodes. Receiving nodes decide to fire based on incoming strength + threshold + emotional state. Creates organic thought chains and emergent multi-hop reasoning.', timestamp: Date.now() - 80000 }
+                ];
+                saveNotes();
+            }
+            renderNotes();
+        }
+
+        function saveNotes() {
+            localStorage.setItem('worldio_notes', JSON.stringify(notes));
+            document.getElementById('sync-status').innerHTML = `${notes.length} notes synced`;
+        }
+
+        function renderNotes() {
+            const grid = document.getElementById('notes-grid');
+            grid.innerHTML = '';
             
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+            if (notes.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-[#00ff41]/60">No notes yet. Click "NEW NOTE" to start documenting architecture ideas.</div>`;
+                return;
+            }
+            
+            notes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
+                const card = document.createElement('div');
+                card.className = `note-card terminal-window bg-black p-7 border border-[#00ff41]/40 cursor-pointer`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="text-[#00ff9d] text-xs tracking-widest">NOTE-${note.id}</div>
+                        <button onclick="event.stopImmediatePropagation(); deleteNote('${note.id}')" class="text-red-400 hover:text-red-500 text-xl leading-none">&times;</button>
+                    </div>
+                    <h4 class="text-3xl font-bold mb-3 line-clamp-2">${note.title}</h4>
+                    <p class="text-[#00ff41]/80 text-lg line-clamp-4 mb-4">${note.content}</p>
+                    <div class="text-xs text-[#00ff41]/50 flex justify-between items-center">
+                        <span>${new Date(note.timestamp).toLocaleDateString()}</span>
+                        <span class="hover:text-[#00ff9d]">CLICK TO EXPAND →</span>
+                    </div>
+                `;
+                card.onclick = () => showNoteDetail(note);
+                grid.appendChild(card);
             });
         }
-        
-        // Terminal commands
+
+        function addNewNote() {
+            const title = document.getElementById('note-title').value.trim();
+            const content = document.getElementById('note-content').value.trim();
+            if (!title || !content) { alert('Please add both title and content'); return; }
+            
+            const newNote = {
+                id: Date.now().toString().slice(-6),
+                title: title,
+                content: content,
+                timestamp: Date.now()
+            };
+            notes.unshift(newNote);
+            saveNotes();
+            renderNotes();
+            hideAddNoteModal();
+            
+            // Show success toast
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-8 right-8 bg-[#00ff41] text-black px-6 py-3 rounded flex items-center gap-3 z-[200]';
+            toast.innerHTML = `<i class="fas fa-check"></i> Note saved locally. Ready to sync.`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2200);
+        }
+
+        function deleteNote(id) {
+            if (!confirm('Delete this note?')) return;
+            notes = notes.filter(n => n.id !== id);
+            saveNotes();
+            renderNotes();
+        }
+
+        function showNoteDetail(note) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-6';
+            modal.innerHTML = `
+                <div class="terminal-window bg-black w-full max-w-2xl p-10 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-6 right-6 text-3xl hover:text-[#00ff9d]">&times;</button>
+                    <div class="text-[#00ff9d] text-sm tracking-[3px] mb-2">NOTE-${note.id} • ${new Date(note.timestamp).toLocaleString()}</div>
+                    <h2 class="text-5xl font-bold mb-8">${note.title}</h2>
+                    <div class="prose prose-invert text-xl leading-relaxed text-[#00ff41]/90 whitespace-pre-wrap">${note.content}</div>
+                    <div class="mt-10 flex gap-4">
+                        <button onclick="deleteNoteFromModal('${note.id}', this)" class="px-6 py-3 border border-red-400/60 hover:bg-red-400/10 text-red-400 flex-1">DELETE NOTE</button>
+                        <button onclick="this.closest('.fixed').remove()" class="px-6 py-3 border-2 border-[#00ff41] flex-1">CLOSE</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function deleteNoteFromModal(id, btn) {
+            if (confirm('Permanently delete this note?')) {
+                notes = notes.filter(n => n.id !== id);
+                saveNotes();
+                renderNotes();
+                btn.closest('.fixed').remove();
+            }
+        }
+
+        function showAddNoteModal() {
+            document.getElementById('add-note-modal').classList.remove('hidden');
+            document.getElementById('add-note-modal').classList.add('flex');
+            setTimeout(() => document.getElementById('note-title').focus(), 100);
+        }
+
+        function hideAddNoteModal() {
+            const m = document.getElementById('add-note-modal');
+            m.classList.remove('flex'); m.classList.add('hidden');
+            document.getElementById('note-title').value = '';
+            document.getElementById('note-content').value = '';
+        }
+
+        function showSyncModal() {
+            const modal = document.getElementById('sync-modal');
+            const list = document.getElementById('sync-notes-list');
+            
+            if (notes.length === 0) {
+                list.innerHTML = '<div class="text-[#00ff41]/60">No local notes to sync.</div>';
+            } else {
+                list.innerHTML = notes.map(n => 
+                    `<div class="mb-3 pb-3 border-b border-[#00ff41]/20 last:border-0">
+                        <div class="font-bold text-[#00ff9d]">${n.title}</div>
+                        <div class="text-xs opacity-70">${n.content.substring(0, 120)}...</div>
+                    </div>`
+                ).join('');
+            }
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+        }
+
+        function hideSyncModal() {
+            const m = document.getElementById('sync-modal');
+            m.classList.remove('flex'); m.classList.add('hidden');
+        }
+
+        function prepareNotesForSync() {
+            const text = notes.map(n => 
+                `## ${n.title}
+
+${n.content}
+
+---
+*Note ID: ${n.id} | Created: ${new Date(n.timestamp).toISOString()}*`
+            ).join('
+
+');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Notes copied to clipboard! Now tell me in chat: "push these notes to the repo" and I will create the files.');
+                hideSyncModal();
+            }).catch(() => {
+                // Fallback
+                prompt('Copy this text and send it to me:', text);
+                hideSyncModal();
+            });
+        }
+
+        // Terminal commands (updated for neural theme)
         const commands = {
-            help: () => 'Available commands: help, whoami, ls, date, clear, matrix, reboot, status',
-            whoami: () => 'root@world-io • Clearance Level 7 • Location: The Grid',
-            ls: () => 'projects/  skills/  terminal/  about/  contact/',
-            date: () => new Date().toLocaleString() + ' • SYSTEM TIME',
-            clear: () => { 
-                document.getElementById('terminal-output').innerHTML = ''; 
-                return 'Terminal cleared.'; 
+            help: () => 'Commands: help, nodes, regions, propagate, status, clear, matrix',
+            nodes: () => 'Active neural nodes: 47 • Regions online: 6 • Avg activation: 0.73',
+            regions: () => 'Prefrontal ✓  Hippocampus ✓  Amygdala ✓  Visual ✓  Language ✓  Motor ✓',
+            propagate: () => { 
+                const out = document.getElementById('terminal-output');
+                out.innerHTML += `<div class="text-[#00ff9d]">Propagating activation across graph...</div>`;
+                setTimeout(() => { out.innerHTML += `<div>Thought pathway complete. 12 nodes fired.</div>`; out.scrollTop = out.scrollHeight; }, 800);
+                return 'Initiating cascade...';
             },
-            matrix: () => { 
-                const canvas = document.getElementById('matrix');
-                canvas.style.opacity = canvas.style.opacity === '0.25' ? '0.06' : '0.25';
-                return 'Matrix intensity toggled.'; 
-            },
-            reboot: () => { 
-                bootSequence(); 
-                return 'Rebooting system...'; 
-            },
-            status: () => 'All systems nominal. Firewall: ACTIVE • Encryption: AES-256 • Uptime: 47d 12h'
+            status: () => 'Neural system nominal • 47 nodes • 6 regions • Context freshness: 94%',
+            clear: () => { document.getElementById('terminal-output').innerHTML = ''; return 'Terminal cleared.'; },
+            matrix: () => { const c = document.getElementById('matrix'); c.style.opacity = c.style.opacity === '0.25' ? '0.06' : '0.25'; return 'Matrix intensity toggled.'; }
         };
-        
+
         function executeCommand() {
             const input = document.getElementById('terminal-input');
             const output = document.getElementById('terminal-output');
             const cmd = input.value.trim().toLowerCase();
-            
             if (!cmd) return;
             
-            // Add user command to output
             const userLine = document.createElement('div');
             userLine.innerHTML = `<span class="text-[#00ff9d]">$</span> ${cmd}`;
             output.appendChild(userLine);
             
-            // Process command
-            let response;
-            if (commands[cmd]) {
-                response = commands[cmd]();
-            } else {
-                response = `Command not found: ${cmd}. Type 'help' for available commands.`;
-            }
-            
+            let response = commands[cmd] ? commands[cmd]() : `Unknown command: ${cmd}. Type 'help'.`;
             if (response) {
-                const responseLine = document.createElement('div');
-                responseLine.innerHTML = response;
-                responseLine.style.opacity = '0.85';
-                output.appendChild(responseLine);
+                const r = document.createElement('div'); r.style.opacity = '0.85'; r.innerHTML = response;
+                output.appendChild(r);
             }
-            
             input.value = '';
             output.scrollTop = output.scrollHeight;
         }
-        
-        // Boot sequence
+
         function bootSequence() {
             const body = document.body;
-            body.style.transition = 'opacity 0.4s';
-            body.style.opacity = '0.2';
-            
-            setTimeout(() => {
-                body.style.opacity = '1';
-                const output = document.getElementById('terminal-output');
-                if (output) {
-                    output.innerHTML = `<div class="text-[#00ff9d]">SYSTEM REBOOT COMPLETE</div>
-                    <div class="opacity-70">All subsystems online.</div>`;
-                }
-            }, 600);
+            body.style.transition = 'opacity 0.35s';
+            body.style.opacity = '0.15';
+            setTimeout(() => { body.style.opacity = '1'; }, 550);
         }
-        
-        // Contact form handler
+
         function sendMessage(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button');
-            const originalText = btn.innerHTML;
-            
             btn.innerHTML = `<i class="fas fa-check mr-2"></i> TRANSMISSION SENT`;
-            btn.style.borderColor = '#00ff9d';
-            btn.style.color = '#00ff9d';
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.borderColor = '#00ff41';
-                btn.style.color = '';
-                alert('Message received. Expect a response within 24 hours. Stay frosty.');
-                e.target.reset();
-            }, 1450);
+            setTimeout(() => { alert('Message received. Let\'s build the neural brain together.'); e.target.reset(); btn.innerHTML = `TRANSMIT TO THE GRID <i class="fas fa-paper-plane ml-2"></i>`; }, 1200);
         }
-        
-        // Initialize everything
+
         function initialize() {
-            initializeTailwind();
             createMatrixRain();
             startTyping();
+            loadNotes();
             
-            // Boot message
-            setTimeout(() => {
-                const output = document.getElementById('terminal-output');
-                if (output && output.children.length < 3) {
-                    output.innerHTML = `
-                        <div class="text-[#00ff9d]">WORLD-IO Terminal v2.0 initialized</div>
-                        <div class="opacity-70">Type 'help' to begin.</div>
-                    `;
-                }
-            }, 1200);
-            
-            // Keyboard shortcut for terminal focus
-            document.addEventListener('keydown', function(e) {
-                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
-                    e.preventDefault();
-                    document.getElementById('terminal-input').focus();
-                }
+            // Keyboard shortcut
+            document.addEventListener('keydown', e => {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') { e.preventDefault(); document.getElementById('terminal-input').focus(); }
+                if (e.key.toLowerCase() === 'n' && e.metaKey) { e.preventDefault(); showAddNoteModal(); }
             });
             
-            // Smooth scroll for nav links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        e.preventDefault();
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+            // Smooth scroll
+            document.querySelectorAll('a[href^="#"]').forEach(a => {
+                a.addEventListener('click', e => {
+                    const target = document.querySelector(a.getAttribute('href'));
+                    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
                 });
             });
             
-            console.log('%c[WORLD-IO] System fully operational. Welcome, operator.', 'color: #00ff41');
+            console.log('%c[WORLD-IO v3.0] Neural architecture lab online. Welcome, operator.', 'color:#00ff41');
         }
-        
         window.onload = initialize;
     </script>
 </body>
