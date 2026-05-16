@@ -240,7 +240,7 @@
             const c = document.getElementById('matrix');
             const cx = c.getContext('2d');
             c.width = window.innerWidth; c.height = window.innerHeight;
-            const chars = '01アイウエオカキクケコサシスセソタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const chars = '01アイウエオカキクケコサシスセSOタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             const fs = 11; const cols = Math.floor(c.width / fs); const drops = Array(cols).fill(1);
             function draw() {
                 cx.fillStyle = 'rgba(5, 5, 5, 0.05)'; cx.fillRect(0, 0, c.width, c.height);
