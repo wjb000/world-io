@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK • Neural Graph v0.3.3 • HF Powered</title>
+    <title>SUDOTEK • Neural Graph v0.4 • HF Router</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -102,7 +102,7 @@
                 <div class="flex items-center gap-3">
                     <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
                     <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
-                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.3.3 • HF POWERED</span>
+                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.4 • HF ROUTER</span>
                 </div>
                 
                 <!-- HF Token -->
@@ -133,8 +133,8 @@
     <div class="max-w-7xl mx-auto px-8 pt-20">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <span class="text-4xl font-bold">NEURAL GRAPH • REAL HF INFERENCE</span>
-                <span class="ml-4 text-xs text-[#00ff41]/60">Tiny cheap models • Real-time outputs • Signal propagation</span>
+                <span class="text-4xl font-bold">NEURAL GRAPH • HF ROUTER (OpenAI compatible)</span>
+                <span class="ml-4 text-xs text-[#00ff41]/60">More reliable • Tiny models • Real-time outputs</span>
             </div>
             <div class="text-xs px-3 py-1 bg-black border border-[#00ff41]/40 rounded">
                 <span id="node-count">0</span> NODES • <span id="connection-count">0</span> CONNECTIONS
@@ -148,8 +148,8 @@
         </div>
 
         <div class="mt-3 text-xs text-[#00ff41]/50 flex items-center gap-6">
-            <div><i class="fas fa-info-circle mr-1"></i> Click node → Configure Hugging Face model (tiny & cheap)</div>
-            <div><i class="fas fa-info-circle mr-1"></i> Fire = Real inference + visual signal to connected nodes</div>
+            <div><i class="fas fa-info-circle mr-1"></i> Click node → Configure model • Fire = Real inference via HF Router</div>
+            <div><i class="fas fa-info-circle mr-1"></i> Much more reliable than old Inference API</div>
             <div><i class="fas fa-info-circle mr-1"></i> Drag • Right-click delete • RUN PARALLEL for swarm mode</div>
         </div>
 
@@ -168,7 +168,7 @@
         <div class="terminal-window bg-black w-full max-w-lg p-8">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <span class="text-[#00ff9d] text-sm">CONFIGURE NODE • HUGGING FACE</span>
+                    <span class="text-[#00ff9d] text-sm">CONFIGURE NODE • HF ROUTER</span>
                     <div id="modal-node-id" class="text-3xl font-bold"></div>
                 </div>
                 <button onclick="closeModal()" class="text-3xl hover:text-[#00ff9d]">&times;</button>
@@ -181,21 +181,20 @@
                 </div>
 
                 <div>
-                    <label class="text-xs text-[#00ff9d]">HUGGING FACE MODEL (tiny & super cheap)</label>
+                    <label class="text-xs text-[#00ff9d]">MODEL (via HF Router)</label>
                     <select id="modal-model" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm" onchange="updateModelHint()">
-                        <option value="HuggingFaceTB/SmolLM-135M-Instruct">SmolLM-135M-Instruct (fastest tiny - recommended)</option>
-                        <option value="Qwen/Qwen2-0.5B-Instruct">Qwen2-0.5B-Instruct (best quality tiny)</option>
-                        <option value="microsoft/Phi-3-mini-4k-instruct">Phi-3-mini-4k-instruct (smart & tiny)</option>
-                        <option value="HuggingFaceTB/SmolLM-360M-Instruct">SmolLM-360M-Instruct</option>
-                        <option value="TinyLlama/TinyLlama-1.1B-Chat-v1.0">TinyLlama-1.1B-Chat-v1.0</option>
-                        <option value="custom">-- Custom Model ID --</option>
+                        <option value="Qwen/Qwen2.5-0.5B-Instruct:featherless-ai">Qwen2.5-0.5B (featherless-ai)</option>
+                        <option value="HuggingFaceTB/SmolLM-135M-Instruct:featherless-ai">SmolLM-135M (featherless-ai)</option>
+                        <option value="Qwen/Qwen2.5-0.5B-Instruct:hyperbolic">Qwen2.5-0.5B (hyperbolic)</option>
+                        <option value="microsoft/Phi-3.5-mini-instruct:nebius">Phi-3.5-mini (nebius)</option>
+                        <option value="custom">-- Custom Router Model --</option>
                     </select>
-                    <input id="modal-custom-model" type="text" class="hidden w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-2 text-sm" placeholder="e.g. username/my-tiny-model">
+                    <input id="modal-custom-model" type="text" class="hidden w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-2 text-sm" placeholder="provider/model">
                 </div>
 
                 <div>
                     <label class="text-xs text-[#00ff9d]">SYSTEM PROMPT / ROLE</label>
-                    <textarea id="modal-prompt" rows="3" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm" placeholder="You are a strategic planner..."></textarea>
+                    <textarea id="modal-prompt" rows="2" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm" placeholder="You are a strategic planner."></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -205,7 +204,7 @@
                         <div class="text-xs text-right" id="temp-value">0.7</div>
                     </div>
                     <div>
-                        <label class="text-xs text-[#00ff9d]">MAX NEW TOKENS</label>
+                        <label class="text-xs text-[#00ff9d]">MAX TOKENS</label>
                         <input id="modal-tokens" type="number" value="128" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm">
                     </div>
                 </div>
@@ -215,7 +214,7 @@
                 <button onclick="saveNodeConfig()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE CONFIG</button>
                 <button onclick="testCurrentNode()" class="flex-1 py-3 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">TEST INFERENCE</button>
             </div>
-            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call can take 15-30s. Use TEST button first to verify your token works.</div>
+            <div class="text-xs text-center mt-3 text-[#00ff41]/60">Uses HF Router (OpenAI compatible) — more reliable than old Inference API</div>
         </div>
     </div>
 
@@ -250,7 +249,7 @@
             const c = document.getElementById('matrix');
             const cx = c.getContext('2d');
             c.width = window.innerWidth; c.height = window.innerHeight;
-            const chars = '01アイウエオカキクケコサシスセSOタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const chars = '01アイウエオカキクケコサシ斯セSOタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             const fs = 11; const cols = Math.floor(c.width / fs); const drops = Array(cols).fill(1);
             function draw() {
                 cx.fillStyle = 'rgba(5, 5, 5, 0.05)'; cx.fillRect(0, 0, c.width, c.height);
@@ -335,7 +334,7 @@
                 x: Math.random() * (rect.width - 120) + 60,
                 y: Math.random() * (rect.height - 120) + 60,
                 name: 'New Node',
-                model: 'HuggingFaceTB/SmolLM-135M-Instruct',
+                model: 'Qwen/Qwen2.5-0.5B-Instruct:featherless-ai',
                 prompt: 'You are a helpful AI assistant.',
                 temp: 0.7,
                 tokens: 128,
@@ -354,7 +353,7 @@
                 el.className = `node`;
                 el.style.left = `${node.x - 39}px`;
                 el.style.top = `${node.y - 39}px`;
-                const shortModel = node.model.split('/').pop().split('-')[0];
+                const shortModel = node.model.split(':')[0].split('/').pop().split('-')[0];
                 el.innerHTML = `<div class="text-center leading-tight"><div class="font-bold text-xs">${node.name}</div><div class="text-[8px] text-[#00ff41]/50">${shortModel}</div></div>`;
                 el.onclick = (e) => { e.stopImmediatePropagation(); openNodeConfig(node); };
                 layer.appendChild(el);
@@ -374,7 +373,7 @@
             const modelSelect = document.getElementById('modal-model');
             const customInput = document.getElementById('modal-custom-model');
             
-            const knownModels = ['HuggingFaceTB/SmolLM-135M-Instruct', 'Qwen/Qwen2-0.5B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'HuggingFaceTB/SmolLM-360M-Instruct', 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'];
+            const knownModels = ['Qwen/Qwen2.5-0.5B-Instruct:featherless-ai', 'HuggingFaceTB/SmolLM-135M-Instruct:featherless-ai', 'Qwen/Qwen2.5-0.5B-Instruct:hyperbolic', 'microsoft/Phi-3.5-mini-instruct:nebius'];
             if (knownModels.includes(node.model)) {
                 modelSelect.value = node.model;
                 customInput.classList.add('hidden');
@@ -418,16 +417,20 @@
         }
 
         async function callHFInference(model, prompt, params, token) {
-            const url = `https://api-inference.huggingface.co/models/${model}`;
+            const url = 'https://router.huggingface.co/v1/chat/completions';
+            
+            const messages = [
+                { role: 'system', content: prompt },
+                { role: 'user', content: 'Respond concisely as this node.' }
+            ];
+            
             const body = {
-                inputs: prompt,
-                parameters: {
-                    max_new_tokens: params.tokens || 100,
-                    temperature: params.temp || 0.7,
-                    do_sample: true,
-                    return_full_text: false
-                }
+                model: model,
+                messages: messages,
+                max_tokens: params.tokens || 100,
+                temperature: params.temp || 0.7
             };
+            
             const res = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -436,14 +439,14 @@
                 },
                 body: JSON.stringify(body)
             });
+            
             if (!res.ok) {
                 const errText = await res.text();
-                throw new Error(`HF ${res.status}: ${errText.substring(0, 150)}`);
+                throw new Error(`HF Router ${res.status}: ${errText.substring(0, 150)}`);
             }
+            
             const data = await res.json();
-            if (Array.isArray(data) && data[0]?.generated_text) return data[0].generated_text.trim();
-            if (data.generated_text) return data.generated_text.trim();
-            return JSON.stringify(data).substring(0, 300);
+            return data.choices?.[0]?.message?.content?.trim() || JSON.stringify(data).substring(0, 200);
         }
 
         async function fireNode(node, isRetry = false) {
@@ -455,11 +458,10 @@
             }
             
             node.element.classList.add('firing');
-            logToPanel(`[${node.name}] Firing with ${node.model.split('/').pop()}...`, node.id);
+            logToPanel(`[${node.name}] Firing with ${node.model.split(':')[0].split('/').pop()}...`, node.id);
             
             try {
-                const fullPrompt = `${node.prompt}\n\nTask: Respond as ${node.name}.`;
-                const output = await callHFInference(node.model, fullPrompt, {temp: node.temp, tokens: node.tokens}, token);
+                const output = await callHFInference(node.model, node.prompt, {temp: node.temp, tokens: node.tokens}, token);
                 
                 logToPanel(`[${node.name}] OUTPUT: ${output.substring(0, 180)}${output.length > 180 ? '...' : ''}`, node.id, true);
                 
@@ -469,18 +471,7 @@
                 
             } catch (e) {
                 logToPanel(`[${node.name}] ERROR: ${e.message}`, node.id);
-                
-                const isNetworkError = e.message.includes('Failed to fetch') || e.message.includes('NetworkError');
-                const isColdStart = e.message.includes('503') || e.message.includes('loading');
-                
-                if (!isRetry && isColdStart) {
-                    showToast('Model loading on HF (cold start). Auto-retrying in 8s...', false, 8000);
-                    setTimeout(() => fireNode(node, true), 8000);
-                } else if (isNetworkError) {
-                    showToast('Network error (Failed to fetch). Check your token or try TEST button first. HF may be rate-limited.', true);
-                } else {
-                    showToast('Error: ' + e.message, true);
-                }
+                showToast('Error: ' + e.message, true);
             } finally {
                 setTimeout(() => { if (node.element) node.element.classList.remove('firing'); }, 600);
             }
@@ -636,10 +627,10 @@
                 const container = document.getElementById('graph-container');
                 
                 const starterNodes = [
-                    { id: 'N001', x: 140, y: 160, name: 'Planner', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are a strategic planner. Break goals into clear steps.', temp: 0.55, tokens: 96 },
-                    { id: 'N002', x: 340, y: 130, name: 'Memory', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are a precise memory module. Recall and summarize context accurately.', temp: 0.35, tokens: 160 },
-                    { id: 'N003', x: 500, y: 200, name: 'Executor', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are an executor. Take action based on the plan and output clean results.', temp: 0.75, tokens: 80 },
-                    { id: 'N004', x: 260, y: 340, name: 'Critic', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are a sharp critic. Evaluate outputs and suggest improvements.', temp: 0.45, tokens: 120 }
+                    { id: 'N001', x: 140, y: 160, name: 'Planner', model: 'Qwen/Qwen2.5-0.5B-Instruct:featherless-ai', prompt: 'You are a strategic planner. Break goals into clear steps.', temp: 0.55, tokens: 96 },
+                    { id: 'N002', x: 340, y: 130, name: 'Memory', model: 'Qwen/Qwen2.5-0.5B-Instruct:featherless-ai', prompt: 'You are a precise memory module. Recall and summarize context accurately.', temp: 0.35, tokens: 160 },
+                    { id: 'N003', x: 500, y: 200, name: 'Executor', model: 'Qwen/Qwen2.5-0.5B-Instruct:featherless-ai', prompt: 'You are an executor. Take action based on the plan and output clean results.', temp: 0.75, tokens: 80 },
+                    { id: 'N004', x: 260, y: 340, name: 'Critic', model: 'Qwen/Qwen2.5-0.5B-Instruct:featherless-ai', prompt: 'You are a sharp critic. Evaluate outputs and suggest improvements.', temp: 0.45, tokens: 120 }
                 ];
                 
                 starterNodes.forEach(n => nodes.push(n));
@@ -653,10 +644,10 @@
                 ];
                 drawGraph();
                 
-                logToPanel('Neural Graph initialized with 4 tiny HF models (SmolLM-135M). Use TEST button first to verify token!', 'system');
+                logToPanel('Neural Graph initialized with HF Router (OpenAI compatible). Much more reliable!', 'system');
             }, 380);
             
-            console.log('%c[SUDOTEK v0.3.3] Real HF inference with better error handling for Failed to fetch.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.4] HF Router (OpenAI compatible) ready. No more Failed to fetch spam.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
