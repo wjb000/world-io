@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK // AI BRAIN ARCHITECTURE</title>
+    <title>SUDOTEK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -13,7 +13,6 @@
             font-family: 'VT323', 'Courier New', monospace;
             background: #050505;
             color: #00ff41;
-            overflow-x: hidden;
         }
         
         .crt::before {
@@ -26,139 +25,74 @@
             z-index: 1;
         }
         
-        .neon-text { text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41; }
-        
-        .terminal-window {
-            box-shadow: 0 0 60px rgba(0, 255, 65, 0.2), inset 0 0 80px rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff41;
-        }
-        
-        .note-card {
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .note-card:hover {
-            transform: translateY(-4px);
-            border-color: #00ff9d;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.25);
-        }
-        
         .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.06; pointer-events: none; }
+        
+        .note-row {
+            transition: background 0.1s ease;
+        }
+        .note-row:hover {
+            background: #0a0a0a;
+        }
     </style>
 </head>
 <body class="min-h-screen crt text-[#00ff41]">
     <!-- Matrix Background -->
     <canvas id="matrix" class="matrix-bg"></canvas>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-lg border-b border-[#00ff41]/30">
-        <div class="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between">
+    <!-- Top Bar -->
+    <div class="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur border-b border-[#00ff41]/30 z-50">
+        <div class="max-w-4xl mx-auto px-8 py-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <i class="fas fa-brain text-3xl text-[#00ff9d]"></i>
                 <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
             </div>
             
-            <div class="flex items-center gap-4">
-                <button onclick="showAddNoteModal()" 
-                        class="px-6 py-2.5 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all flex items-center gap-2 text-lg">
-                    <i class="fas fa-plus"></i> <span>NEW NOTE</span>
-                </button>
-                
-                <button onclick="showSyncModal()" 
-                        class="px-5 py-2.5 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-all flex items-center gap-2 text-sm">
-                    <i class="fas fa-cloud-upload-alt"></i> <span>SYNC</span>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero / Landing -->
-    <div class="pt-24 pb-16 text-center px-8">
-        <div class="max-w-3xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-black border border-[#00ff41]/40 rounded-full mb-8">
-                <div class="w-2 h-2 bg-[#00ff41] rounded-full animate-pulse"></div>
-                <span class="text-sm tracking-[3px] text-[#00ff9d]">AI BRAIN ARCHITECTURE LAB • 2026</span>
-            </div>
-            
-            <h1 class="text-[72px] md:text-[92px] leading-none font-bold tracking-[-3px] neon-text mb-6">SUDOTEK</h1>
-            
-            <p class="text-3xl text-[#00ff9d] mb-8">Neural Context System</p>
-            
-            <p class="text-xl max-w-md mx-auto text-[#00ff41]/80">
-                Bootstrap interface for building the SUDOTEK AI brain — 
-                modular neural nodes, organic pathways, and pre-query context architecture.
-            </p>
-        </div>
-    </div>
-
-    <!-- NOTES SECTION -->
-    <div class="max-w-6xl mx-auto px-8 pb-24">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <span class="text-4xl font-bold">// ARCHITECTURE NOTES</span>
-                <span class="ml-4 text-[#00ff41]/60 text-sm">LIVING DOCUMENTATION</span>
-            </div>
-            <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm flex items-center gap-2">
-                <i class="fas fa-sync-alt"></i> <span id="sync-status">3 notes</span>
-            </div>
-        </div>
-
-        <div id="notes-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </div>
-
-    <!-- Add Note Modal -->
-    <div id="add-note-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[100]">
-        <div class="terminal-window bg-black w-full max-w-lg p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-3xl">NEW ARCHITECTURE NOTE</h3>
-                <button onclick="hideAddNoteModal()" class="text-3xl hover:text-[#00ff9d]">&times;</button>
-            </div>
-            
-            <div class="space-y-5">
-                <div>
-                    <label class="block text-sm mb-2 text-[#00ff9d]">NOTE TITLE</label>
-                    <input id="note-title" type="text" class="w-full bg-black border border-[#00ff41]/50 px-5 py-3 text-lg focus:outline-none focus:border-[#00ff9d]" placeholder="e.g. Node Activation Threshold">
+            <div class="flex items-center gap-3">
+                <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm flex items-center gap-2">
+                    <span id="note-count">3 notes</span>
                 </div>
-                <div>
-                    <label class="block text-sm mb-2 text-[#00ff9d]">CONTENT / IDEA</label>
-                    <textarea id="note-content" rows="8" class="w-full bg-black border border-[#00ff41]/50 px-5 py-3 text-lg focus:outline-none focus:border-[#00ff9d] resize-y" placeholder="Describe the idea in detail..."></textarea>
-                </div>
-            </div>
-            
-            <div class="flex gap-4 mt-8">
-                <button onclick="hideAddNoteModal()" class="flex-1 py-3 border border-[#00ff41]/50 hover:bg-[#00ff41]/10 transition-colors">CANCEL</button>
-                <button onclick="addNewNote()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE NOTE</button>
+                <button onclick="syncToRepo()" 
+                        class="px-5 py-2 border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all flex items-center gap-2 text-sm">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>SYNC TO REPO</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Sync Modal -->
-    <div id="sync-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[100]">
-        <div class="terminal-window bg-black w-full max-w-2xl p-8">
-            <h3 class="text-3xl mb-6 flex items-center gap-3"><i class="fas fa-cloud-upload-alt text-[#00ff9d]"></i> SYNC TO REPOSITORY</h3>
-            
-            <div class="mb-6">
-                <p class="text-[#00ff41]/80 mb-4">These notes will be saved as files in <span class="font-bold">/notes/</span>:</p>
-                <div id="sync-notes-list" class="bg-black/60 border border-[#00ff41]/30 p-4 text-sm max-h-72 overflow-auto font-mono"></div>
+    <div class="max-w-4xl mx-auto px-8 pt-24 pb-12">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-6xl font-bold tracking-tight neon-text mb-3">SUDOTEK</h1>
+            <p class="text-[#00ff9d] text-2xl">Neural Brain Architecture • Simple Notes</p>
+        </div>
+
+        <!-- Quick Add -->
+        <div class="mb-8 flex gap-3">
+            <input id="quick-input" type="text" 
+                   class="flex-1 bg-black border border-[#00ff41]/50 px-6 py-4 text-xl focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/50"
+                   placeholder="Type your idea and press Enter..." 
+                   onkeydown="if (event.key === 'Enter') addQuickNote()">
+            <button onclick="addQuickNote()" 
+                    class="px-8 py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all text-xl">
+                ADD
+            </button>
+        </div>
+
+        <!-- Notes List -->
+        <div class="terminal-window bg-black border border-[#00ff41]/40">
+            <div class="px-6 py-4 border-b border-[#00ff41]/30 flex items-center justify-between">
+                <span class="text-[#00ff9d] text-sm tracking-widest">ARCHITECTURE NOTES</span>
+                <span class="text-xs text-[#00ff41]/50">Click any note to edit • Press Enter to save</span>
             </div>
             
-            <div class="bg-[#00ff41]/10 border border-[#00ff41]/40 p-4 text-sm mb-6">
-                <strong>Next step:</strong> Copy the notes below, then tell me in chat:<br>
-                <span class="font-bold">"push these notes to the repo"</span>
-            </div>
-            
-            <div class="flex gap-4">
-                <button onclick="hideSyncModal()" class="flex-1 py-3 border border-[#00ff41]/50 hover:bg-[#00ff41]/10">CLOSE</button>
-                <button onclick="prepareNotesForSync()" class="flex-1 py-3 border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">COPY ALL NOTES</button>
-            </div>
+            <div id="notes-list" class="divide-y divide-[#00ff41]/20 max-h-[520px] overflow-auto"></div>
+        </div>
+
+        <div class="text-center mt-8 text-[#00ff41]/50 text-sm">
+            Notes are saved locally • Use SYNC button to push to /notes/ folder
         </div>
     </div>
-
-    <footer class="bg-black border-t border-[#00ff41]/20 py-8 text-center text-sm opacity-60">
-        <div class="max-w-5xl mx-auto px-8">
-            <p>SUDOTEK • NEURAL BRAIN ARCHITECTURE • ALL RIGHTS RESERVED 2026</p>
-            <p class="mt-2 text-xs">MINIMAL BOOTSTRAP INTERFACE • NOTES SYNC TO /notes/ FOLDER</p>
-        </div>
-    </footer>
 
     <script>
         // Matrix rain
@@ -178,10 +112,8 @@
                 }
             }
             setInterval(draw, 55);
-            window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
         }
 
-        // Notes System
         let notes = [];
 
         function loadNotes() {
@@ -189,9 +121,9 @@
             if (saved) notes = JSON.parse(saved);
             else {
                 notes = [
-                    { id: '001', title: 'Brain Regions Architecture', content: 'The system is divided into specialized brain-like regions: Prefrontal (planning), Hippocampus (memory), Amygdala (priority), Visual Cortex, Language Cortex, Motor/Executive. Each region contains clusters of neural nodes with specialized mini-LLMs.', timestamp: Date.now() - 100000 },
-                    { id: '002', title: 'Neural Nodes Core Concept', content: 'Each Neural Node is a self-contained mini-LLM with specialized system prompt, local context, activation state (on/off/firing), and weighted connections to other nodes. Lifecycle: Query → Activate relevant nodes → Process → Output thought fragment → Propagate state.', timestamp: Date.now() - 90000 },
-                    { id: '003', title: 'Pathway Propagation', content: 'Nodes form a directed graph. When a node fires, it sends activation signal (0.0-1.0) + content to connected nodes. Receiving nodes decide to fire based on incoming strength + threshold + emotional state. Creates organic thought chains and emergent multi-hop reasoning.', timestamp: Date.now() - 80000 }
+                    { id: '001', content: 'Brain Regions: Prefrontal, Hippocampus, Amygdala, Visual, Language, Motor — each with mini-LLMs', timestamp: Date.now() - 100000 },
+                    { id: '002', content: 'Neural Nodes: Self-contained mini-LLMs with activation state + weighted connections', timestamp: Date.now() - 90000 },
+                    { id: '003', content: 'Pathway Propagation: Nodes fire and send activation signals (0-1) to connected nodes, creating organic thought chains', timestamp: Date.now() - 80000 }
                 ];
                 saveNotes();
             }
@@ -200,144 +132,101 @@
 
         function saveNotes() {
             localStorage.setItem('sudotek_notes', JSON.stringify(notes));
-            document.getElementById('sync-status').innerHTML = `${notes.length} notes`;
+            document.getElementById('note-count').innerHTML = `${notes.length} notes`;
         }
 
         function renderNotes() {
-            const grid = document.getElementById('notes-grid');
-            grid.innerHTML = '';
+            const container = document.getElementById('notes-list');
+            container.innerHTML = '';
             
             if (notes.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-[#00ff41]/60">No notes yet. Click "NEW NOTE" above to begin documenting SUDOTEK architecture.</div>`;
+                container.innerHTML = `<div class="px-6 py-12 text-center text-[#00ff41]/60">No notes yet. Type above and press ADD.</div>`;
                 return;
             }
             
-            notes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
-                const card = document.createElement('div');
-                card.className = `note-card terminal-window bg-black p-7 border border-[#00ff41]/40 cursor-pointer`;
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="text-[#00ff9d] text-xs tracking-widest">NOTE-${note.id}</div>
-                        <button onclick="event.stopImmediatePropagation(); deleteNote('${note.id}')" class="text-red-400 hover:text-red-500 text-xl leading-none">&times;</button>
+            notes.sort((a, b) => b.timestamp - a.timestamp).forEach((note, index) => {
+                const row = document.createElement('div');
+                row.className = `note-row px-6 py-4 flex items-start gap-4 group`;
+                
+                row.innerHTML = `
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[#00ff9d] text-xs tracking-widest">NOTE-${note.id}</span>
+                            <span class="text-xs text-[#00ff41]/50">${new Date(note.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <div contenteditable="true" class="mt-2 text-lg leading-tight outline-none" 
+                             onblur="updateNoteContent(${index}, this.innerText)">${note.content}</div>
                     </div>
-                    <h4 class="text-3xl font-bold mb-3 line-clamp-2">${note.title}</h4>
-                    <p class="text-[#00ff41]/80 text-lg line-clamp-4 mb-4">${note.content}</p>
-                    <div class="text-xs text-[#00ff41]/50">${new Date(note.timestamp).toLocaleDateString()}</div>
+                    
+                    <button onclick="deleteNote(${index})" 
+                            class="opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-500 transition-all px-2 py-1 text-xl">
+                        &times;
+                    </button>
                 `;
-                card.onclick = () => showNoteDetail(note);
-                grid.appendChild(card);
+                container.appendChild(row);
             });
         }
 
-        function addNewNote() {
-            const title = document.getElementById('note-title').value.trim();
-            const content = document.getElementById('note-content').value.trim();
-            if (!title || !content) { alert('Please add both title and content'); return; }
+        function addQuickNote() {
+            const input = document.getElementById('quick-input');
+            const value = input.value.trim();
+            if (!value) return;
             
             const newNote = {
                 id: Date.now().toString().slice(-6),
-                title: title,
-                content: content,
+                content: value,
                 timestamp: Date.now()
             };
+            
             notes.unshift(newNote);
             saveNotes();
             renderNotes();
-            hideAddNoteModal();
+            input.value = '';
             
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-8 right-8 bg-[#00ff41] text-black px-6 py-3 rounded flex items-center gap-3 z-[200]';
-            toast.innerHTML = `<i class="fas fa-check"></i> Note saved. Ready to sync.`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            // Flash effect
+            const container = document.getElementById('notes-list');
+            container.style.transition = 'none';
+            container.style.background = 'rgba(0,255,65,0.08)';
+            setTimeout(() => {
+                container.style.transition = 'background 0.6s';
+                container.style.background = 'transparent';
+            }, 50);
         }
 
-        function deleteNote(id) {
+        function updateNoteContent(index, newContent) {
+            if (!newContent.trim()) return;
+            notes[index].content = newContent.trim();
+            saveNotes();
+        }
+
+        function deleteNote(index) {
             if (!confirm('Delete this note?')) return;
-            notes = notes.filter(n => n.id !== id);
+            notes.splice(index, 1);
             saveNotes();
             renderNotes();
         }
 
-        function showNoteDetail(note) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-6';
-            modal.innerHTML = `
-                <div class="terminal-window bg-black w-full max-w-2xl p-10 relative">
-                    <button onclick="this.closest('.fixed').remove()" class="absolute top-6 right-6 text-3xl hover:text-[#00ff9d]">&times;</button>
-                    <div class="text-[#00ff9d] text-sm tracking-[3px] mb-2">NOTE-${note.id} • ${new Date(note.timestamp).toLocaleString()}</div>
-                    <h2 class="text-5xl font-bold mb-8">${note.title}</h2>
-                    <div class="prose prose-invert text-xl leading-relaxed text-[#00ff41]/90 whitespace-pre-wrap">${note.content}</div>
-                    <div class="mt-10">
-                        <button onclick="deleteNoteFromModal('${note.id}', this)" class="px-6 py-3 border border-red-400/60 hover:bg-red-400/10 text-red-400">DELETE NOTE</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        function deleteNoteFromModal(id, btn) {
-            if (confirm('Permanently delete this note?')) {
-                notes = notes.filter(n => n.id !== id);
-                saveNotes();
-                renderNotes();
-                btn.closest('.fixed').remove();
-            }
-        }
-
-        function showAddNoteModal() {
-            document.getElementById('add-note-modal').classList.remove('hidden');
-            document.getElementById('add-note-modal').classList.add('flex');
-            setTimeout(() => document.getElementById('note-title').focus(), 100);
-        }
-
-        function hideAddNoteModal() {
-            const m = document.getElementById('add-note-modal');
-            m.classList.remove('flex'); m.classList.add('hidden');
-            document.getElementById('note-title').value = '';
-            document.getElementById('note-content').value = '';
-        }
-
-        function showSyncModal() {
-            const modal = document.getElementById('sync-modal');
-            const list = document.getElementById('sync-notes-list');
-            
+        function syncToRepo() {
             if (notes.length === 0) {
-                list.innerHTML = '<div class="text-[#00ff41]/60">No notes to sync yet.</div>';
-            } else {
-                list.innerHTML = notes.map(n => 
-                    `<div class="mb-4 pb-4 border-b border-[#00ff41]/20 last:border-0">
-                        <div class="font-bold text-[#00ff9d]">${n.title}</div>
-                        <div class="text-xs opacity-70 mt-1">${n.content.substring(0, 140)}...</div>
-                    </div>`
-                ).join('');
+                alert('No notes to sync yet.');
+                return;
             }
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-
-        function hideSyncModal() {
-            const m = document.getElementById('sync-modal');
-            m.classList.remove('flex'); m.classList.add('hidden');
-        }
-
-        function prepareNotesForSync() {
+            
             const text = notes.map(n => 
-                `## ${n.title}
+                `## Note ${n.id}
 
 ${n.content}
 
 ---
-*Note ID: ${n.id} | Created: ${new Date(n.timestamp).toISOString()}*`
+*Created: ${new Date(n.timestamp).toISOString()}*`
             ).join('
 
 ');
             
             navigator.clipboard.writeText(text).then(() => {
-                alert('Notes copied! Now tell me in chat: "push these notes to the repo"');
-                hideSyncModal();
+                alert('Notes copied to clipboard!\n\nNow tell me in chat: "push these notes to the repo"');
             }).catch(() => {
-                prompt('Copy this and send to me:', text);
-                hideSyncModal();
+                prompt('Copy this text and send it to me:', text);
             });
         }
 
@@ -345,15 +234,15 @@ ${n.content}
             createMatrixRain();
             loadNotes();
             
-            // Keyboard shortcut: press N to add note
+            // Keyboard: Press / to focus input
             document.addEventListener('keydown', e => {
-                if (e.key.toLowerCase() === 'n' && document.activeElement.tagName === 'BODY') {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
                     e.preventDefault();
-                    showAddNoteModal();
+                    document.getElementById('quick-input').focus();
                 }
             });
             
-            console.log('%c[SUDOTEK] Neural bootstrap interface ready.', 'color:#00ff41');
+            console.log('%c[SUDOTEK] Simple notes ready.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
