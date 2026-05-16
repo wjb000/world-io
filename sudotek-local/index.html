@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUDOTEK • LOCAL v1.0 (WebLLM)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.79/dist/web-llm.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        body {
+            font-family: 'VT323', 'Courier New', monospace;
+            background: #050505;
+            color: #00ff41;
+        }
+        
+        .crt::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0, 255, 65, 0.015) 50%, transparent 50%);
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.05; pointer-events: none; }
+        
+        .node {
+            position: absolute;
+            width: 78px;
+            height: 78px;
+            background: #0a0a0a;
+            border: 2px solid #00ff41;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 10px;
+            text-align: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+        
+        .node.firing {
+            animation: fire 0.8s ease;
+            box-shadow: 0 0 40px #00ff41;
+            border-color: #00ff9d;
+        }
+        
+        @keyframes fire {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+        
+        .signal {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00ff41;
+            border-radius: 9999px;
+            box-shadow: 0 0 15px #00ff41;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .log-entry {
+            padding: 4px 8px;
+            border-bottom: 1px solid #00ff41;
+            font-size: 11px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #112211;
+            border: 1px solid #00ff41;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 1000;
+            max-width: 340px;
+        }
+    </style>
+</head>
+<body class="min-h-screen crt text-[#00ff41]">
+    <canvas id="matrix" class="matrix-bg"></canvas>
+
+    <!-- Top Bar -->
+    <div class="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur border-b border-[#00ff41]/30 z-50">
+        <div class="max-w-7xl mx-auto px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-microchip text-3xl text-[#00ff9d]"></i>
+                    <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
+                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v1.0 • LOCAL (WebLLM)</span>
+                </div>
+                
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="text-[#00ff9d]">Model:</span>
+                    <select id="global-model" class="bg-black border border-[#00ff41]/50 px-3 py-1 text-xs rounded">
+                        <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama-3.2-1B (fast)</option>
+                        <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3-mini (smart)</option>
+                        <option value="SmolLM-135M-Instruct-q4f16_1-MLC">SmolLM-135M (tiny)</option>
+                    </select>
+                    <button onclick="loadSelectedModel()" class="px-3 py-1 text-xs border border-[#00ff41]/50 hover:bg-[#00ff41]/10">LOAD MODEL</button>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div id="model-status" class="text-xs px-3 py-1 bg-black border border-[#00ff41]/40 rounded flex items-center gap-2">
+                    <span class="text-[#00ff41]/60">Model:</span> <span id="model-name">Not loaded</span>
+                </div>
+                
+                <button onclick="runParallel()" class="px-5 py-2 border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all flex items-center gap-2 text-sm font-bold">
+                    <i class="fas fa-play"></i> <span>RUN PARALLEL</span>
+                </button>
+                <button onclick="addNode()" class="px-5 py-2 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all flex items-center gap-2 text-sm">
+                    <i class="fas fa-plus"></i> <span>ADD NODE</span>
+                </button>
+                <button onclick="clearAll()" class="px-4 py-2 border border-red-400/60 hover:bg-red-400/10 text-red-400 text-sm">CLEAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-8 pt-20">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <span class="text-4xl font-bold">NEURAL GRAPH • LOCAL WEBLLM</span>
+                <span class="ml-4 text-xs text-[#00ff41]/60">Runs 100% on your laptop • No internet needed after model loads</span>
+            </div>
+            <div class="text-xs px-3 py-1 bg-black border border-[#00ff41]/40 rounded">
+                <span id="node-count">0</span> NODES • <span id="connection-count">0</span> CONNECTIONS
+            </div>
+        </div>
+
+        <!-- Graph Container -->
+        <div id="graph-container" class="relative w-full h-[580px] terminal-window bg-black border border-[#00ff41]/40 overflow-hidden" style="box-shadow: 0 0 60px rgba(0, 255, 65, 0.15);">
+            <canvas id="graph-canvas" class="absolute inset-0 w-full h-full"></canvas>
+            <div id="nodes-layer" class="absolute inset-0"></div>
+        </div>
+
+        <div class="mt-3 text-xs text-[#00ff41]/50 flex items-center gap-6">
+            <div><i class="fas fa-info-circle mr-1"></i> First load takes 30-90s (downloads model once)</div>
+            <div><i class="fas fa-info-circle mr-1"></i> After that it's fully offline & fast</div>
+            <div><i class="fas fa-info-circle mr-1"></i> Drag nodes • Right-click to delete • Click to configure</div>
+        </div>
+
+        <!-- Inference Log -->
+        <div class="mt-4 terminal-window bg-black border border-[#00ff41]/40 p-3">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[#00ff9d] text-sm tracking-widest">LIVE INFERENCE LOG (LOCAL)</span>
+                <button onclick="clearLog()" class="text-xs px-2 py-0.5 border border-[#00ff41]/50">CLEAR LOG</button>
+            </div>
+            <div id="log-content" class="max-h-48 overflow-auto text-xs space-y-1 font-mono"></div>
+        </div>
+    </div>
+
+    <!-- Node Config Modal -->
+    <div id="node-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[100]">
+        <div class="terminal-window bg-black w-full max-w-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <span class="text-[#00ff9d] text-sm">CONFIGURE NODE • LOCAL</span>
+                    <div id="modal-node-id" class="text-3xl font-bold"></div>
+                </div>
+                <button onclick="closeModal()" class="text-3xl hover:text-[#00ff9d]">&times;</button>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="text-xs text-[#00ff9d]">NODE NAME / ROLE</label>
+                    <input id="modal-name" type="text" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-lg">
+                </div>
+
+                <div>
+                    <label class="text-xs text-[#00ff9d]">SYSTEM PROMPT / ROLE</label>
+                    <textarea id="modal-prompt" rows="2" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm" placeholder="You are a strategic planner."></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-[#00ff9d]">TEMPERATURE</label>
+                        <input id="modal-temp" type="range" min="0" max="1" step="0.1" value="0.7" class="w-full mt-2" oninput="document.getElementById('temp-value').innerHTML = this.value">
+                        <div class="text-xs text-right" id="temp-value">0.7</div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-[#00ff9d]">MAX TOKENS</label>
+                        <input id="modal-tokens" type="number" value="128" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button onclick="saveNodeConfig()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE CONFIG</button>
+                <button onclick="fireCurrentNode()" class="flex-1 py-3 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">FIRE NODE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let nodes = [];
+        let connections = [];
+        let selectedNode = null;
+        let canvas, ctx;
+        let isDragging = false;
+        let dragNode = null;
+        let engine = null;
+        let currentModel = null;
+        let isModelLoaded = false;
+
+        async function loadSelectedModel() {
+            const modelId = document.getElementById('global-model').value;
+            const statusEl = document.getElementById('model-status');
+            const nameEl = document.getElementById('model-name');
+            
+            statusEl.innerHTML = `<span class="text-[#00ff41]/60">Loading...</span>`;
+            nameEl.innerHTML = modelId.split('-')[0];
+            
+            try {
+                engine = await webllm.CreateMLCEngine(modelId, {
+                    initProgressCallback: (progress) => {
+                        statusEl.innerHTML = `<span class="text-[#00ff41]/60">${Math.round(progress.progress * 100)}%</span>`;
+                    }
+                });
+                
+                currentModel = modelId;
+                isModelLoaded = true;
+                statusEl.innerHTML = `<span class="text-[#00ff9d]">READY</span>`;
+                logToPanel(`Model ${modelId} loaded successfully (fully local)`, 'system');
+                
+            } catch (e) {
+                statusEl.innerHTML = `<span class="text-red-400">FAILED</span>`;
+                showToast('Failed to load model: ' + e.message, true);
+            }
+        }
+
+        function createMatrixRain() {
+            const c = document.getElementById('matrix');
+            const cx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            const chars = '01アイウエオカキクケコサシ斯セSOタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const fs = 11; const cols = Math.floor(c.width / fs); const drops = Array(cols).fill(1);
+            function draw() {
+                cx.fillStyle = 'rgba(5, 5, 5, 0.05)'; cx.fillRect(0, 0, c.width, c.height);
+                cx.fillStyle = '#00ff41'; cx.font = fs + 'px monospace';
+                for (let i = 0; i < drops.length; i++) {
+                    cx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fs, drops[i] * fs);
+                    if (drops[i] * fs > c.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            }
+            setInterval(draw, 55);
+        }
+
+        function initGraph() {
+            canvas = document.getElementById('graph-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const container = document.getElementById('graph-container');
+            container.addEventListener('mousedown', startDrag);
+            container.addEventListener('mousemove', drag);
+            container.addEventListener('mouseup', endDrag);
+            container.addEventListener('mouseleave', endDrag);
+
+            container.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const node = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 42);
+                if (node) deleteNode(node.id);
+            });
+
+            container.addEventListener('click', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const node = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 42);
+                if (node) openNodeConfig(node);
+            });
+
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                drawGraph();
+            });
+
+            drawGraph();
+        }
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#00ff41';
+            ctx.lineWidth = 1.8;
+            connections.forEach(conn => {
+                const from = nodes.find(n => n.id === conn.from);
+                const to = nodes.find(n => n.id === conn.to);
+                if (from && to) {
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(to.x, to.y);
+                    ctx.stroke();
+                    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+                    const arrowLen = 14;
+                    ctx.beginPath();
+                    ctx.moveTo(to.x - arrowLen * Math.cos(angle - 0.35), to.y - arrowLen * Math.sin(angle - 0.35));
+                    ctx.lineTo(to.x, to.y);
+                    ctx.lineTo(to.x - arrowLen * Math.cos(angle + 0.35), to.y - arrowLen * Math.sin(angle + 0.35));
+                    ctx.stroke();
+                }
+            });
+            document.getElementById('node-count').innerHTML = nodes.length;
+            document.getElementById('connection-count').innerHTML = connections.length;
+        }
+
+        function addNode() {
+            const container = document.getElementById('graph-container');
+            const rect = container.getBoundingClientRect();
+            const node = {
+                id: 'N' + Date.now().toString().slice(-6),
+                x: Math.random() * (rect.width - 120) + 60,
+                y: Math.random() * (rect.height - 120) + 60,
+                name: 'New Node',
+                prompt: 'You are a helpful AI assistant.',
+                temp: 0.7,
+                tokens: 128,
+                firing: false
+            };
+            nodes.push(node);
+            renderNodes();
+            drawGraph();
+        }
+
+        function renderNodes() {
+            const layer = document.getElementById('nodes-layer');
+            layer.innerHTML = '';
+            nodes.forEach(node => {
+                const el = document.createElement('div');
+                el.className = `node`;
+                el.style.left = `${node.x - 39}px`;
+                el.style.top = `${node.y - 39}px`;
+                const shortModel = 'LOCAL';
+                el.innerHTML = `<div class="text-center leading-tight"><div class="font-bold text-xs">${node.name}</div><div class="text-[8px] text-[#00ff41]/50">${shortModel}</div></div>`;
+                el.onclick = (e) => { e.stopImmediatePropagation(); openNodeConfig(node); };
+                layer.appendChild(el);
+                node.element = el;
+            });
+        }
+
+        function openNodeConfig(node) {
+            selectedNode = node;
+            document.getElementById('modal-node-id').innerHTML = node.id;
+            document.getElementById('modal-name').value = node.name;
+            document.getElementById('modal-prompt').value = node.prompt;
+            document.getElementById('modal-temp').value = node.temp;
+            document.getElementById('temp-value').innerHTML = node.temp;
+            document.getElementById('modal-tokens').value = node.tokens;
+            
+            document.getElementById('node-modal').classList.remove('hidden');
+            document.getElementById('node-modal').classList.add('flex');
+        }
+
+        function saveNodeConfig() {
+            if (!selectedNode) return;
+            selectedNode.name = document.getElementById('modal-name').value || 'Unnamed';
+            selectedNode.prompt = document.getElementById('modal-prompt').value;
+            selectedNode.temp = parseFloat(document.getElementById('modal-temp').value);
+            selectedNode.tokens = parseInt(document.getElementById('modal-tokens').value);
+            closeModal();
+            renderNodes();
+            logToPanel(`Node ${selectedNode.id} config saved`, 'system');
+        }
+
+        function closeModal() {
+            document.getElementById('node-modal').classList.remove('flex');
+            document.getElementById('node-modal').classList.add('hidden');
+            selectedNode = null;
+        }
+
+        async function fireNode(node) {
+            if (!node.element || !isModelLoaded || !engine) {
+                showToast('Please load a model first (top bar)', true);
+                return;
+            }
+            
+            node.element.classList.add('firing');
+            logToPanel(`[${node.name}] Thinking locally...`, node.id);
+            
+            try {
+                const messages = [
+                    { role: "system", content: node.prompt },
+                    { role: "user", content: "Respond concisely as this node." }
+                ];
+                
+                const output = await engine.chat.completions.create({
+                    messages: messages,
+                    temperature: node.temp,
+                    max_tokens: node.tokens
+                });
+                
+                const response = output.choices[0].message.content.trim();
+                
+                logToPanel(`[${node.name}] OUTPUT: ${response.substring(0, 160)}${response.length > 160 ? '...' : ''}`, node.id, true);
+                
+                const originalHTML = node.element.innerHTML;
+                node.element.innerHTML = `<div class="text-center text-[9px] leading-none">${response.substring(0, 55)}...</div>`;
+                setTimeout(() => { if (node.element) node.element.innerHTML = originalHTML; }, 4500);
+                
+            } catch (e) {
+                logToPanel(`[${node.name}] ERROR: ${e.message}`, node.id);
+                showToast('Local inference error: ' + e.message, true);
+            } finally {
+                setTimeout(() => { if (node.element) node.element.classList.remove('firing'); }, 600);
+            }
+            
+            const connected = connections.filter(c => c.from === node.id).map(c => c.to);
+            connected.forEach((targetId, i) => {
+                setTimeout(() => {
+                    const target = nodes.find(n => n.id === targetId);
+                    if (target && target.element) {
+                        createSignal(node, target);
+                        setTimeout(() => fireNode(target), 350);
+                    }
+                }, i * 220);
+            });
+        }
+
+        function showToast(message, isError = false, autoHide = 6000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'border-red-400' : 'border-[#00ff41]'}`;
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="flex-1 text-sm">${message}</div>
+                    <button onclick="this.parentElement.remove()" class="text-lg leading-none">&times;</button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            if (autoHide > 0) {
+                setTimeout(() => {
+                    if (toast.parentElement) toast.remove();
+                }, autoHide);
+            }
+        }
+
+        function createSignal(fromNode, toNode) {
+            const container = document.getElementById('graph-container');
+            const signal = document.createElement('div');
+            signal.className = 'signal';
+            signal.style.left = `${fromNode.x}px`;
+            signal.style.top = `${fromNode.y}px`;
+            container.appendChild(signal);
+            
+            let p = 0;
+            const int = setInterval(() => {
+                p += 0.09;
+                if (p >= 1) { clearInterval(int); signal.remove(); return; }
+                const nx = fromNode.x + (toNode.x - fromNode.x) * p;
+                const ny = fromNode.y + (toNode.y - fromNode.y) * p;
+                signal.style.left = `${nx - 5}px`;
+                signal.style.top = `${ny - 5}px`;
+            }, 28);
+        }
+
+        function logToPanel(msg, nodeId = 'system', isOutput = false) {
+            const logEl = document.getElementById('log-content');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${isOutput ? 'text-[#00ff9d]' : ''}`;
+            const time = new Date().toLocaleTimeString('en-US', {hour12: false});
+            entry.innerHTML = `<span class="text-[#00ff41]/40">[${time}]</span> ${msg}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+            while (logEl.children.length > 25) logEl.removeChild(logEl.firstChild);
+        }
+
+        function clearLog() {
+            document.getElementById('log-content').innerHTML = '';
+        }
+
+        async function runParallel() {
+            if (nodes.length === 0) { alert('Add some nodes first!'); return; }
+            if (!isModelLoaded) { showToast('Please load a model first from the top bar', true); return; }
+            
+            logToPanel('=== RUNNING PARALLEL LOCAL SWARM ===', 'system');
+            const shuffled = [...nodes].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < shuffled.length; i++) {
+                setTimeout(() => {
+                    fireNode(shuffled[i]);
+                }, i * 280);
+            }
+        }
+
+        function deleteNode(id) {
+            nodes = nodes.filter(n => n.id !== id);
+            connections = connections.filter(c => c.from !== id && c.to !== id);
+            renderNodes();
+            drawGraph();
+        }
+
+        function clearAll() {
+            if (!confirm('Clear entire neural graph?')) return;
+            nodes = [];
+            connections = [];
+            document.getElementById('nodes-layer').innerHTML = '';
+            drawGraph();
+            clearLog();
+        }
+
+        function startDrag(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            dragNode = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 42);
+            if (dragNode) isDragging = true;
+        }
+
+        function drag(e) {
+            if (!isDragging || !dragNode) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            dragNode.x = e.clientX - rect.left;
+            dragNode.y = e.clientY - rect.top;
+            if (dragNode.element) {
+                dragNode.element.style.left = `${dragNode.x - 39}px`;
+                dragNode.element.style.top = `${dragNode.y - 39}px`;
+            }
+            drawGraph();
+        }
+
+        function endDrag() {
+            isDragging = false;
+            dragNode = null;
+        }
+
+        function initialize() {
+            createMatrixRain();
+            initGraph();
+            
+            setTimeout(() => {
+                document.getElementById('global-model').value = 'SmolLM-135M-Instruct-q4f16_1-MLC';
+                loadSelectedModel();
+            }, 800);
+            
+            setTimeout(() => {
+                const container = document.getElementById('graph-container');
+                
+                const starterNodes = [
+                    { id: 'N001', x: 140, y: 160, name: 'Planner', prompt: 'You are a strategic planner. Break goals into clear steps.', temp: 0.55, tokens: 96 },
+                    { id: 'N002', x: 340, y: 130, name: 'Memory', prompt: 'You are a precise memory module. Recall and summarize context accurately.', temp: 0.35, tokens: 160 },
+                    { id: 'N003', x: 500, y: 200, name: 'Executor', prompt: 'You are an executor. Take action based on the plan and output clean results.', temp: 0.75, tokens: 80 },
+                    { id: 'N004', x: 260, y: 340, name: 'Critic', prompt: 'You are a sharp critic. Evaluate outputs and suggest improvements.', temp: 0.45, tokens: 120 }
+                ];
+                
+                starterNodes.forEach(n => nodes.push(n));
+                renderNodes();
+                
+                connections = [
+                    { from: 'N001', to: 'N002' },
+                    { from: 'N002', to: 'N003' },
+                    { from: 'N001', to: 'N004' },
+                    { from: 'N004', to: 'N003' }
+                ];
+                drawGraph();
+                
+                logToPanel('Local WebLLM ready. Load model from top bar, then RUN PARALLEL!', 'system');
+            }, 1200);
+            
+            console.log('%c[SUDOTEK LOCAL v1.0] WebLLM ready. Fully offline after model loads.', 'color:#00ff41');
+        }
+        
+        window.onload = initialize;
+    </script>
+</body>
+</html>
