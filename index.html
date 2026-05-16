@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK • Neural Graph v0.3 • HF Powered</title>
+    <title>SUDOTEK • Neural Graph v0.3.2 • HF Powered</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -78,6 +78,18 @@
             border-bottom: 1px solid #00ff41;
             font-size: 11px;
         }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #112211;
+            border: 1px solid #00ff41;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 1000;
+            max-width: 320px;
+        }
     </style>
 </head>
 <body class="min-h-screen crt text-[#00ff41]">
@@ -90,7 +102,7 @@
                 <div class="flex items-center gap-3">
                     <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
                     <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
-                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.3 • HF POWERED</span>
+                    <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.3.2 • HF POWERED</span>
                 </div>
                 
                 <!-- HF Token -->
@@ -171,7 +183,7 @@
                 <div>
                     <label class="text-xs text-[#00ff9d]">HUGGING FACE MODEL (tiny & super cheap)</label>
                     <select id="modal-model" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm" onchange="updateModelHint()">
-                        <option value="HuggingFaceTB/SmolLM-135M-Instruct">SmolLM-135M-Instruct (fastest tiny)</option>
+                        <option value="HuggingFaceTB/SmolLM-135M-Instruct">SmolLM-135M-Instruct (fastest tiny - recommended)</option>
                         <option value="Qwen/Qwen2-0.5B-Instruct">Qwen2-0.5B-Instruct (best quality tiny)</option>
                         <option value="microsoft/Phi-3-mini-4k-instruct">Phi-3-mini-4k-instruct (smart & tiny)</option>
                         <option value="HuggingFaceTB/SmolLM-360M-Instruct">SmolLM-360M-Instruct</option>
@@ -203,7 +215,7 @@
                 <button onclick="saveNodeConfig()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE CONFIG</button>
                 <button onclick="testCurrentNode()" class="flex-1 py-3 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">TEST INFERENCE</button>
             </div>
-            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call may take 15-30s (model cold start on HF free tier)</div>
+            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call to a model can take 15-30s (cold start). Use SmolLM-135M for fastest results.</div>
         </div>
     </div>
 
@@ -434,11 +446,11 @@
             return JSON.stringify(data).substring(0, 300);
         }
 
-        async function fireNode(node) {
+        async function fireNode(node, isRetry = false) {
             if (!node.element) return;
             const token = getHFToken();
             if (!token || !token.startsWith('hf_')) {
-                alert('Please enter your Hugging Face token first (get free at huggingface.co/settings/tokens)');
+                showToast('Please enter your Hugging Face token first', true);
                 return;
             }
             
@@ -457,7 +469,14 @@
                 
             } catch (e) {
                 logToPanel(`[${node.name}] ERROR: ${e.message}`, node.id);
-                alert('Inference failed: ' + e.message + '\n\nTip: Some models need ~20s first load. Try again or use a different tiny model.');
+                
+                if (!isRetry && e.message.includes('503') || e.message.includes('loading')) {
+                    // Auto-retry once after 8 seconds for cold start
+                    showToast('Model is loading on HF servers (cold start). Retrying in 8s...', false, 8000);
+                    setTimeout(() => fireNode(node, true), 8000);
+                } else {
+                    showToast('Inference failed: ' + e.message + ' — Try SmolLM-135M (fastest) or wait 20s and retry', true);
+                }
             } finally {
                 setTimeout(() => { if (node.element) node.element.classList.remove('firing'); }, 600);
             }
@@ -472,6 +491,24 @@
                     }
                 }, i * 220);
             });
+        }
+
+        function showToast(message, isError = false, autoHide = 6000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'border-red-400' : 'border-[#00ff41]'}`;
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="flex-1 text-sm">${message}</div>
+                    <button onclick="this.parentElement.remove()" class="text-lg leading-none">&times;</button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            if (autoHide > 0) {
+                setTimeout(() => {
+                    if (toast.parentElement) toast.remove();
+                }, autoHide);
+            }
         }
 
         function createSignal(fromNode, toNode) {
@@ -595,10 +632,10 @@
                 const container = document.getElementById('graph-container');
                 
                 const starterNodes = [
-                    { id: 'N001', x: 140, y: 160, name: 'Planner', model: 'Qwen/Qwen2-0.5B-Instruct', prompt: 'You are a strategic planner. Break goals into clear steps.', temp: 0.55, tokens: 96 },
+                    { id: 'N001', x: 140, y: 160, name: 'Planner', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are a strategic planner. Break goals into clear steps.', temp: 0.55, tokens: 96 },
                     { id: 'N002', x: 340, y: 130, name: 'Memory', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are a precise memory module. Recall and summarize context accurately.', temp: 0.35, tokens: 160 },
-                    { id: 'N003', x: 500, y: 200, name: 'Executor', model: 'microsoft/Phi-3-mini-4k-instruct', prompt: 'You are an executor. Take action based on the plan and output clean results.', temp: 0.75, tokens: 80 },
-                    { id: 'N004', x: 260, y: 340, name: 'Critic', model: 'HuggingFaceTB/SmolLM-360M-Instruct', prompt: 'You are a sharp critic. Evaluate outputs and suggest improvements.', temp: 0.45, tokens: 120 }
+                    { id: 'N003', x: 500, y: 200, name: 'Executor', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are an executor. Take action based on the plan and output clean results.', temp: 0.75, tokens: 80 },
+                    { id: 'N004', x: 260, y: 340, name: 'Critic', model: 'HuggingFaceTB/SmolLM-135M-Instruct', prompt: 'You are a sharp critic. Evaluate outputs and suggest improvements.', temp: 0.45, tokens: 120 }
                 ];
                 
                 starterNodes.forEach(n => nodes.push(n));
@@ -612,10 +649,10 @@
                 ];
                 drawGraph();
                 
-                logToPanel('Neural Graph initialized with 4 tiny HF models. Enter your token above & click RUN PARALLEL!', 'system');
+                logToPanel('Neural Graph initialized with 4 tiny HF models (all SmolLM-135M for fastest loading). Enter your token & click RUN PARALLEL!', 'system');
             }, 380);
             
-            console.log('%c[SUDOTEK v0.3] Real Hugging Face inference ready. Token is now user-provided only.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.3.2] Real Hugging Face inference ready. Cold start handling improved.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
