@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK • v0.1</title>
+    <title>SUDOTEK • Neural Graph v0.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -27,26 +27,49 @@
         
         .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.05; pointer-events: none; }
         
-        .region-card {
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .region-card:hover {
-            transform: translateY(-4px);
-            border-color: #00ff9d;
+        #graph-canvas {
+            background: #050505;
+            border: 2px solid #00ff41;
         }
         
         .node {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: #0a0a0a;
+            border: 2px solid #00ff41;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
             transition: all 0.2s ease;
+            z-index: 10;
         }
+        
         .node.firing {
-            animation: fire 0.6s ease;
-            box-shadow: 0 0 25px #00ff41;
+            animation: fire 0.8s ease;
+            box-shadow: 0 0 35px #00ff41;
+            border-color: #00ff9d;
         }
         
         @keyframes fire {
             0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            40% { transform: scale(1.3); }
             100% { transform: scale(1); }
+        }
+        
+        .signal {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00ff41;
+            border-radius: 9999px;
+            box-shadow: 0 0 12px #00ff41;
+            z-index: 5;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -55,274 +78,424 @@
 
     <!-- Top Bar -->
     <div class="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur border-b border-[#00ff41]/30 z-50">
-        <div class="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <i class="fas fa-brain text-3xl text-[#00ff9d]"></i>
+                <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
                 <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
-                <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.1 • REAL</span>
+                <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.2 • GRAPH</span>
             </div>
             
-            <div class="flex items-center gap-6 text-sm">
-                <a href="#cloud" class="hover:text-[#00ff9d] transition-colors">CLOUD</a>
-                <a href="#regions" class="hover:text-[#00ff9d] transition-colors">REGIONS</a>
-                <a href="#nodes" class="hover:text-[#00ff9d] transition-colors">NODES</a>
+            <div class="flex items-center gap-4">
+                <button onclick="addNode()" class="px-5 py-2 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all flex items-center gap-2 text-sm">
+                    <i class="fas fa-plus"></i> <span>ADD NODE</span>
+                </button>
+                <button onclick="clearAll()" class="px-4 py-2 border border-red-400/60 hover:bg-red-400/10 text-red-400 text-sm">
+                    CLEAR ALL
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-8 pt-20 pb-16">
-        <div class="text-center mb-16">
-            <div class="inline-flex items-center gap-2 px-4 py-1 bg-black border border-[#00ff41]/40 rounded-full mb-6">
-                <span class="text-xs tracking-[2px] text-[#00ff9d]">PHASE 1 • REAL ENVIRONMENT</span>
+    <div class="max-w-7xl mx-auto px-8 pt-20">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <span class="text-4xl font-bold">NEURAL GRAPH</span>
+                <span class="ml-4 text-xs text-[#00ff41]/60">Click nodes to configure • Drag to move • Fire to propagate signals</span>
             </div>
-            <h1 class="text-7xl font-bold tracking-tight neon-text mb-4">SUDOTEK</h1>
-            <p class="text-2xl text-[#00ff9d]">Neural Brain • Micro Models • Cloud Ready</p>
-        </div>
-
-        <!-- CLOUD (Real API Key Management) -->
-        <div id="cloud" class="mb-16">
-            <div class="flex items-center gap-4 mb-6">
-                <i class="fas fa-cloud text-3xl text-[#00ff9d]"></i>
-                <span class="text-4xl font-bold">CLOUD MICRO MODELS</span>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Groq -->
-                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <div class="font-bold text-xl">Groq</div>
-                            <div class="text-xs text-[#00ff41]/60">Llama 3.1 8B • Fastest</div>
-                        </div>
-                        <i class="fas fa-bolt text-2xl text-yellow-400"></i>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="text-xs text-[#00ff9d]">API KEY (saved locally)</label>
-                        <input id="groq-key" type="password" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 text-sm mt-1" placeholder="gsk_...">
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="saveApiKey('groq')" class="flex-1 py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 text-sm">SAVE KEY</button>
-                        <button onclick="testGroq()" class="flex-1 py-2 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black text-sm">TEST</button>
-                    </div>
-                </div>
-
-                <!-- Together.ai -->
-                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <div class="font-bold text-xl">Together.ai</div>
-                            <div class="text-xs text-[#00ff41]/60">Open models • Mixtral</div>
-                        </div>
-                        <i class="fas fa-robot text-2xl text-purple-400"></i>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="text-xs text-[#00ff9d]">API KEY (saved locally)</label>
-                        <input id="together-key" type="password" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 text-sm mt-1" placeholder="tgp_...">
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="saveApiKey('together')" class="flex-1 py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 text-sm">SAVE KEY</button>
-                        <button onclick="testTogether()" class="flex-1 py-2 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black text-sm">TEST</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-xs text-[#00ff41]/50 mt-4 text-center">API keys are saved only in your browser (localStorage). Never sent anywhere.</div>
-        </div>
-
-        <!-- REGIONS -->
-        <div id="regions" class="mb-16">
-            <div class="flex items-center gap-4 mb-6">
-                <i class="fas fa-globe text-3xl text-[#00ff9d]"></i>
-                <span class="text-4xl font-bold">BRAIN REGIONS (6)</span>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
-                    <i class="fas fa-lightbulb text-4xl mb-3 text-yellow-400"></i>
-                    <div class="font-bold">PREFRONTAL</div>
-                    <div class="text-xs text-[#00ff41]/60">Planning • Reasoning</div>
-                </div>
-                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
-                    <i class="fas fa-memory text-4xl mb-3 text-blue-400"></i>
-                    <div class="font-bold">HIPPOCAMPUS</div>
-                    <div class="text-xs text-[#00ff41]/60">Memory • Context</div>
-                </div>
-                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
-                    <i class="fas fa-heart text-4xl mb-3 text-red-400"></i>
-                    <div class="font-bold">AMYGDALA</div>
-                    <div class="text-xs text-[#00ff41]/60">Priority • Emotion</div>
-                </div>
-                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
-                    <i class="fas fa-eye text-4xl mb-3 text-purple-400"></i>
-                    <div class="font-bold">VISUAL</div>
-                    <div class="text-xs text-[#00ff41]/60">Spatial • Vision</div>
-                </div>
-                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
-                    <i class="fas fa-comments text-4xl mb-3 text-cyan-400"></i>
-                    <div class="font-bold">LANGUAGE</div>
-                    <div class="text-xs text-[#00ff41]/60">Nuance • Text</div>
-                </div>
-                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
-                    <i class="fas fa-hand-paper text-4xl mb-3 text-green-400"></i>
-                    <div class="font-bold">MOTOR</div>
-                    <div class="text-xs text-[#00ff41]/60">Action • Output</div>
-                </div>
+            <div class="text-xs px-3 py-1 bg-black border border-[#00ff41]/40 rounded">
+                <span id="node-count">0</span> NODES • <span id="connection-count">0</span> CONNECTIONS
             </div>
         </div>
 
-        <!-- NODES -->
-        <div id="nodes">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
-                    <span class="text-4xl font-bold">NEURAL NODES</span>
+        <!-- Graph Container -->
+        <div id="graph-container" class="relative w-full h-[620px] terminal-window bg-black border border-[#00ff41]/40 overflow-hidden" style="box-shadow: 0 0 60px rgba(0, 255, 65, 0.15);">
+            <canvas id="graph-canvas" class="absolute inset-0 w-full h-full"></canvas>
+            <div id="nodes-layer" class="absolute inset-0"></div>
+        </div>
+
+        <div class="mt-4 text-xs text-[#00ff41]/50 flex items-center gap-6">
+            <div><i class="fas fa-info-circle mr-1"></i> Click node → Configure with llama.cpp</div>
+            <div><i class="fas fa-info-circle mr-1"></i> Right-click node → Delete</div>
+            <div><i class="fas fa-info-circle mr-1"></i> Drag nodes to reposition</div>
+        </div>
+    </div>
+
+    <!-- Node Config Modal -->
+    <div id="node-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[100]">
+        <div class="terminal-window bg-black w-full max-w-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <span class="text-[#00ff9d] text-sm">CONFIGURE NODE</span>
+                    <div id="modal-node-id" class="text-3xl font-bold"></div>
                 </div>
-                <button onclick="spawnNode()" class="px-5 py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 text-sm flex items-center gap-2">
-                    <i class="fas fa-plus"></i> <span>SPAWN NODE</span>
-                </button>
+                <button onclick="closeModal()" class="text-3xl hover:text-[#00ff9d]">&times;</button>
             </div>
-            
-            <div id="nodes-container" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="text-xs text-[#00ff9d]">NODE NAME / ROLE</label>
+                    <input id="modal-name" type="text" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-lg">
+                </div>
+
+                <div>
+                    <label class="text-xs text-[#00ff9d]">LLAMA.CPP MODEL</label>
+                    <select id="modal-model" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm">
+                        <option value="llama-3.1-8b">Llama 3.1 8B (Q4_K_M)</option>
+                        <option value="llama-3.1-70b">Llama 3.1 70B (Q4_K_M)</option>
+                        <option value="mixtral-8x7b">Mixtral 8x7B Instruct</option>
+                        <option value="phi-3-mini">Phi-3 Mini 4K</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs text-[#00ff9d]">SYSTEM PROMPT / ROLE</label>
+                    <textarea id="modal-prompt" rows="3" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm" placeholder="You are a planning expert..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-[#00ff9d]">TEMPERATURE</label>
+                        <input id="modal-temp" type="range" min="0" max="1" step="0.1" value="0.7" class="w-full mt-2">
+                        <div class="text-xs text-right" id="temp-value">0.7</div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-[#00ff9d]">MAX TOKENS</label>
+                        <input id="modal-tokens" type="number" value="256" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 mt-1 text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button onclick="saveNodeConfig()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE CONFIG</button>
+                <button onclick="fireCurrentNode()" class="flex-1 py-3 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">FIRE NODE</button>
+            </div>
         </div>
     </div>
 
     <script>
+        let nodes = [];
+        let connections = [];
+        let selectedNode = null;
+        let canvas, ctx;
+        let isDragging = false;
+        let dragNode = null;
+
         function createMatrixRain() {
-            const canvas = document.getElementById('matrix');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const c = document.getElementById('matrix');
+            const cx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
             const chars = '01アイウエオカキクケコサシスセソタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-            const fontSize = 12; const columns = Math.floor(canvas.width / fontSize); const drops = Array(columns).fill(1);
+            const fs = 12; const cols = Math.floor(c.width / fs); const drops = Array(cols).fill(1);
             function draw() {
-                ctx.fillStyle = 'rgba(5, 5, 5, 0.06)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#00ff41'; ctx.font = fontSize + 'px monospace';
+                cx.fillStyle = 'rgba(5, 5, 5, 0.06)'; cx.fillRect(0, 0, c.width, c.height);
+                cx.fillStyle = '#00ff41'; cx.font = fs + 'px monospace';
                 for (let i = 0; i < drops.length; i++) {
-                    ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.97) drops[i] = 0;
+                    cx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fs, drops[i] * fs);
+                    if (drops[i] * fs > c.height && Math.random() > 0.97) drops[i] = 0;
                     drops[i]++;
                 }
             }
             setInterval(draw, 60);
         }
 
-        function activateRegion(el) {
-            el.style.borderColor = '#00ff9d';
-            el.style.boxShadow = '0 0 25px rgba(0, 255, 157, 0.4)';
+        function initGraph() {
+            canvas = document.getElementById('graph-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            // Mouse events for dragging
+            const container = document.getElementById('graph-container');
+            container.addEventListener('mousedown', startDrag);
+            container.addEventListener('mousemove', drag);
+            container.addEventListener('mouseup', endDrag);
+            container.addEventListener('mouseleave', endDrag);
+
+            // Right click to delete
+            container.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const node = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 40);
+                if (node) deleteNode(node.id);
+            });
+
+            // Click to open config
+            container.addEventListener('click', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const node = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 40);
+                if (node) openNodeConfig(node);
+            });
+
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                drawGraph();
+            });
+
+            drawGraph();
+        }
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections
+            ctx.strokeStyle = '#00ff41';
+            ctx.lineWidth = 1.5;
+            connections.forEach(conn => {
+                const from = nodes.find(n => n.id === conn.from);
+                const to = nodes.find(n => n.id === conn.to);
+                if (from && to) {
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(to.x, to.y);
+                    ctx.stroke();
+
+                    // Arrow head
+                    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+                    const arrowLen = 12;
+                    ctx.beginPath();
+                    ctx.moveTo(to.x - arrowLen * Math.cos(angle - 0.4), to.y - arrowLen * Math.sin(angle - 0.4));
+                    ctx.lineTo(to.x, to.y);
+                    ctx.lineTo(to.x - arrowLen * Math.cos(angle + 0.4), to.y - arrowLen * Math.sin(angle + 0.4));
+                    ctx.stroke();
+                }
+            });
+
+            // Update counts
+            document.getElementById('node-count').innerHTML = nodes.length;
+            document.getElementById('connection-count').innerHTML = connections.length;
+        }
+
+        function addNode() {
+            const container = document.getElementById('graph-container');
+            const rect = container.getBoundingClientRect();
+            
+            const node = {
+                id: 'N' + Date.now().toString().slice(-6),
+                x: Math.random() * (rect.width - 100) + 50,
+                y: Math.random() * (rect.height - 100) + 50,
+                name: 'New Node',
+                model: 'llama-3.1-8b',
+                prompt: 'You are a helpful assistant.',
+                temp: 0.7,
+                tokens: 256,
+                firing: false
+            };
+            
+            nodes.push(node);
+            renderNodes();
+            drawGraph();
+        }
+
+        function renderNodes() {
+            const layer = document.getElementById('nodes-layer');
+            layer.innerHTML = '';
+            
+            nodes.forEach(node => {
+                const el = document.createElement('div');
+                el.className = `node`;
+                el.style.left = `${node.x - 35}px`;
+                el.style.top = `${node.y - 35}px`;
+                el.innerHTML = `<div class="text-center"><div class="font-bold text-xs">${node.name}</div><div class="text-[9px] text-[#00ff41]/60">${node.model.split('-')[0]}</div></div>`;
+                
+                el.onclick = (e) => { e.stopImmediatePropagation(); openNodeConfig(node); };
+                
+                layer.appendChild(el);
+                node.element = el;
+            });
+        }
+
+        function openNodeConfig(node) {
+            selectedNode = node;
+            
+            document.getElementById('modal-node-id').innerHTML = node.id;
+            document.getElementById('modal-name').value = node.name;
+            document.getElementById('modal-model').value = node.model;
+            document.getElementById('modal-prompt').value = node.prompt;
+            document.getElementById('modal-temp').value = node.temp;
+            document.getElementById('temp-value').innerHTML = node.temp;
+            document.getElementById('modal-tokens').value = node.tokens;
+            
+            document.getElementById('node-modal').classList.remove('hidden');
+            document.getElementById('node-modal').classList.add('flex');
+            
+            // Update temp display live
+            document.getElementById('modal-temp').oninput = function() {
+                document.getElementById('temp-value').innerHTML = this.value;
+            };
+        }
+
+        function saveNodeConfig() {
+            if (!selectedNode) return;
+            
+            selectedNode.name = document.getElementById('modal-name').value || 'Unnamed';
+            selectedNode.model = document.getElementById('modal-model').value;
+            selectedNode.prompt = document.getElementById('modal-prompt').value;
+            selectedNode.temp = parseFloat(document.getElementById('modal-temp').value);
+            selectedNode.tokens = parseInt(document.getElementById('modal-tokens').value);
+            
+            closeModal();
+            renderNodes();
+        }
+
+        function closeModal() {
+            document.getElementById('node-modal').classList.remove('flex');
+            document.getElementById('node-modal').classList.add('hidden');
+            selectedNode = null;
+        }
+
+        function fireCurrentNode() {
+            if (!selectedNode) return;
+            closeModal();
+            fireNode(selectedNode);
+        }
+
+        function fireNode(node) {
+            if (!node.element) return;
+            
+            node.element.classList.add('firing');
             setTimeout(() => {
-                el.style.borderColor = '#00ff41';
-                el.style.boxShadow = 'none';
-            }, 700);
-        }
-
-        let nodeCount = 0;
-        function spawnNode() {
-            const container = document.getElementById('nodes-container');
-            nodeCount++;
+                if (node.element) node.element.classList.remove('firing');
+            }, 800);
             
-            const node = document.createElement('div');
-            node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center`;
-            node.innerHTML = `
-                <div class="text-[#00ff9d] text-xs mb-1">NODE-${String(nodeCount).padStart(3, '0')}</div>
-                <div class="font-bold mb-2">Mini-LLM</div>
-                <div class="text-xs text-[#00ff41]/60 mb-3">Ready</div>
-                <div class="flex justify-center gap-2">
-                    <button onclick="fireNode(this)" class="px-3 py-1 text-xs border border-[#00ff41]/60 hover:bg-[#00ff41]/10">FIRE</button>
-                    <button onclick="removeNode(this)" class="px-3 py-1 text-xs border border-red-400/60 hover:bg-red-400/10 text-red-400">KILL</button>
-                </div>
-            `;
-            container.appendChild(node);
+            // Send signal to connected nodes
+            const connected = connections.filter(c => c.from === node.id).map(c => c.to);
+            
+            connected.forEach((targetId, i) => {
+                setTimeout(() => {
+                    const targetNode = nodes.find(n => n.id === targetId);
+                    if (targetNode && targetNode.element) {
+                        // Create signal animation
+                        createSignal(node, targetNode);
+                        
+                        // Fire target after signal arrives
+                        setTimeout(() => {
+                            if (targetNode.element) fireNode(targetNode);
+                        }, 400);
+                    }
+                }, i * 180);
+            });
         }
 
-        function fireNode(btn) {
-            const node = btn.closest('.node');
-            node.classList.add('firing');
-            setTimeout(() => node.classList.remove('firing'), 600);
+        function createSignal(fromNode, toNode) {
+            const container = document.getElementById('graph-container');
+            const signal = document.createElement('div');
+            signal.className = 'signal';
+            
+            const startX = fromNode.x;
+            const startY = fromNode.y;
+            const endX = toNode.x;
+            const endY = toNode.y;
+            
+            signal.style.left = `${startX}px`;
+            signal.style.top = `${startY}px`;
+            container.appendChild(signal);
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 0.08;
+                if (progress >= 1) {
+                    clearInterval(interval);
+                    signal.remove();
+                    return;
+                }
+                const x = startX + (endX - startX) * progress;
+                const y = startY + (endY - startY) * progress;
+                signal.style.left = `${x - 4}px`;
+                signal.style.top = `${y - 4}px`;
+            }, 30);
         }
 
-        function removeNode(btn) {
-            btn.closest('.node').remove();
+        function deleteNode(id) {
+            nodes = nodes.filter(n => n.id !== id);
+            connections = connections.filter(c => c.from !== id && c.to !== id);
+            renderNodes();
+            drawGraph();
         }
 
-        function saveApiKey(provider) {
-            const input = document.getElementById(`${provider}-key`);
-            if (!input.value.trim()) {
-                alert('Please enter an API key');
-                return;
+        function clearAll() {
+            if (!confirm('Clear entire graph?')) return;
+            nodes = [];
+            connections = [];
+            document.getElementById('nodes-layer').innerHTML = '';
+            drawGraph();
+        }
+
+        // Simple auto-connect for demo
+        function autoConnect() {
+            if (nodes.length < 2) return;
+            // Connect first 3 nodes in a chain for demo
+            for (let i = 0; i < Math.min(3, nodes.length - 1); i++) {
+                connections.push({ from: nodes[i].id, to: nodes[i+1].id });
             }
-            localStorage.setItem(`sudotek_${provider}_key`, input.value.trim());
-            alert(`${provider.toUpperCase()} API key saved locally.`);
-            input.value = '';
+            drawGraph();
         }
 
-        function testGroq() {
-            const key = localStorage.getItem('sudotek_groq_key');
-            if (!key) {
-                alert('No Groq API key saved. Please save one first.');
-                return;
-            }
+        function startDrag(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
             
-            const btn = event.currentTarget;
-            const original = event.target.innerHTML;
-            event.target.innerHTML = 'TESTING...';
-            
-            // Simulate real API call (in real version we would use fetch to Groq API)
-            setTimeout(() => {
-                alert('Groq test successful!\nModel: Llama 3.1 8B\nLatency: 87ms\n(Real API integration coming next)');
-                event.target.innerHTML = original;
-            }, 900);
+            dragNode = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 40);
+            if (dragNode) isDragging = true;
         }
 
-        function testTogether() {
-            const key = localStorage.getItem('sudotek_together_key');
-            if (!key) {
-                alert('No Together.ai API key saved. Please save one first.');
-                return;
+        function drag(e) {
+            if (!isDragging || !dragNode) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            dragNode.x = e.clientX - rect.left;
+            dragNode.y = e.clientY - rect.top;
+            
+            // Update visual position
+            if (dragNode.element) {
+                dragNode.element.style.left = `${dragNode.x - 35}px`;
+                dragNode.element.style.top = `${dragNode.y - 35}px`;
             }
             
-            const btn = event.currentTarget;
-            const original = event.target.innerHTML;
-            event.target.innerHTML = 'TESTING...';
-            
-            setTimeout(() => {
-                alert('Together.ai test successful!\nModel: Mixtral 8x7B\nLatency: 142ms\n(Real API integration coming next)');
-                event.target.innerHTML = original;
-            }, 900);
+            drawGraph();
+        }
+
+        function endDrag() {
+            isDragging = false;
+            dragNode = null;
         }
 
         function initialize() {
             createMatrixRain();
+            initGraph();
             
-            // Load saved keys into inputs
-            const groqKey = localStorage.getItem('sudotek_groq_key');
-            if (groqKey) document.getElementById('groq-key').placeholder = '•••••••• (saved)';
-            
-            const togetherKey = localStorage.getItem('sudotek_together_key');
-            if (togetherKey) document.getElementById('together-key').placeholder = '•••••••• (saved)';
-            
-            // Spawn 2 starter nodes
+            // Create 4 starter nodes
             setTimeout(() => {
-                const container = document.getElementById('nodes-container');
-                for (let i = 0; i < 2; i++) {
-                    const node = document.createElement('div');
-                    node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center`;
-                    node.innerHTML = `
-                        <div class="text-[#00ff9d] text-xs mb-1">NODE-00${i+1}</div>
-                        <div class="font-bold mb-2">Mini-LLM</div>
-                        <div class="text-xs text-[#00ff41]/60 mb-3">Ready</div>
-                        <div class="flex justify-center gap-2">
-                            <button onclick="fireNode(this)" class="px-3 py-1 text-xs border border-[#00ff41]/60 hover:bg-[#00ff41]/10">FIRE</button>
-                            <button onclick="removeNode(this)" class="px-3 py-1 text-xs border border-red-400/60 hover:bg-red-400/10 text-red-400">KILL</button>
-                        </div>
-                    `;
-                    container.appendChild(node);
-                }
-            }, 600);
+                const container = document.getElementById('graph-container');
+                const rect = container.getBoundingClientRect();
+                
+                const starterNodes = [
+                    { id: 'N001', x: 120, y: 180, name: 'Planner', model: 'llama-3.1-8b', prompt: 'You break down complex goals into steps.', temp: 0.6, tokens: 256 },
+                    { id: 'N002', x: 320, y: 140, name: 'Memory', model: 'llama-3.1-8b', prompt: 'You recall relevant past context.', temp: 0.4, tokens: 512 },
+                    { id: 'N003', x: 480, y: 220, name: 'Executor', model: 'llama-3.1-8b', prompt: 'You execute the final action.', temp: 0.8, tokens: 128 },
+                    { id: 'N004', x: 280, y: 320, name: 'Critic', model: 'llama-3.1-8b', prompt: 'You evaluate and improve outputs.', temp: 0.5, tokens: 256 }
+                ];
+                
+                starterNodes.forEach(n => nodes.push(n));
+                renderNodes();
+                
+                // Auto connect in a nice pattern
+                connections = [
+                    { from: 'N001', to: 'N002' },
+                    { from: 'N002', to: 'N003' },
+                    { from: 'N001', to: 'N004' },
+                    { from: 'N004', to: 'N003' }
+                ];
+                drawGraph();
+            }, 400);
             
-            console.log('%c[SUDOTEK v0.1] Real environment ready.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.2] Neural Graph ready. Click nodes to configure with llama.cpp.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
