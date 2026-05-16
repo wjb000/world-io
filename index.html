@@ -96,9 +96,9 @@
                 <!-- HF Token -->
                 <div class="flex items-center gap-2 text-xs">
                     <span class="text-[#00ff9d]">HF Token:</span>
-                    <input id="hf-token" type="password" value="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" 
+                    <input id="hf-token" type="password" value="" 
                            class="bg-black border border-[#00ff41]/50 px-3 py-1 text-xs w-64 rounded" 
-                           placeholder="hf_..." onchange="saveHFToken()">
+                           placeholder="Enter your hf_... token" onchange="saveHFToken()">
                     <button onclick="saveHFToken()" class="px-2 py-1 text-xs border border-[#00ff41]/50 hover:bg-[#00ff41]/10">SAVE</button>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                 <button onclick="saveNodeConfig()" class="flex-1 py-3 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all">SAVE CONFIG</button>
                 <button onclick="testCurrentNode()" class="flex-1 py-3 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all">TEST INFERENCE</button>
             </div>
-            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call may take 15-30s (model cold start on HF)</div>
+            <div class="text-xs text-center mt-3 text-[#00ff41]/60">First call may take 15-30s (model cold start on HF free tier)</div>
         </div>
     </div>
 
@@ -216,14 +216,14 @@
         let dragNode = null;
 
         function getHFToken() {
-            return document.getElementById('hf-token').value.trim() || localStorage.getItem('hf_token') || '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';
+            return document.getElementById('hf-token').value.trim() || localStorage.getItem('hf_token') || '';
         }
 
         function saveHFToken() {
             const token = document.getElementById('hf-token').value.trim();
             if (token) {
                 localStorage.setItem('hf_token', token);
-                logToPanel('HF Token saved to browser', 'system');
+                logToPanel('HF Token saved to browser (never shared)', 'system');
             }
         }
 
@@ -231,8 +231,6 @@
             const saved = localStorage.getItem('hf_token');
             if (saved) {
                 document.getElementById('hf-token').value = saved;
-            } else {
-                document.getElementById('hf-token').value = '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';
             }
         }
 
@@ -439,8 +437,8 @@
         async function fireNode(node) {
             if (!node.element) return;
             const token = getHFToken();
-            if (!token.startsWith('hf_')) {
-                alert('Please enter a valid Hugging Face token (starts with hf_)');
+            if (!token || !token.startsWith('hf_')) {
+                alert('Please enter your Hugging Face token first (get free at huggingface.co/settings/tokens)');
                 return;
             }
             
@@ -453,7 +451,6 @@
                 
                 logToPanel(`[${node.name}] OUTPUT: ${output.substring(0, 180)}${output.length > 180 ? '...' : ''}`, node.id, true);
                 
-                // Visual result on node temporarily
                 const originalHTML = node.element.innerHTML;
                 node.element.innerHTML = `<div class="text-center text-[9px] leading-none">${output.substring(0, 60)}...</div>`;
                 setTimeout(() => { if (node.element) node.element.innerHTML = originalHTML; }, 4500);
@@ -465,14 +462,13 @@
                 setTimeout(() => { if (node.element) node.element.classList.remove('firing'); }, 600);
             }
             
-            // Propagate visual signal to connected
             const connected = connections.filter(c => c.from === node.id).map(c => c.to);
             connected.forEach((targetId, i) => {
                 setTimeout(() => {
                     const target = nodes.find(n => n.id === targetId);
                     if (target && target.element) {
                         createSignal(node, target);
-                        setTimeout(() => fireNode(target), 350);  // chain real inference too!
+                        setTimeout(() => fireNode(target), 350);
                     }
                 }, i * 220);
             });
@@ -505,7 +501,6 @@
             entry.innerHTML = `<span class="text-[#00ff41]/40">[${time}]</span> ${msg}`;
             logEl.appendChild(entry);
             logEl.scrollTop = logEl.scrollHeight;
-            // Keep only last 25 entries
             while (logEl.children.length > 25) logEl.removeChild(logEl.firstChild);
         }
 
@@ -520,7 +515,7 @@
             for (let i = 0; i < shuffled.length; i++) {
                 setTimeout(() => {
                     fireNode(shuffled[i]);
-                }, i * 280);  // staggered start like the video
+                }, i * 280);
             }
         }
 
@@ -566,13 +561,13 @@
         }
 
         function updateModelHint() {
-            // optional future
+            // optional
         }
 
         async function testCurrentNode() {
             if (!selectedNode) return;
             const token = getHFToken();
-            if (!token.startsWith('hf_')) { alert('Set HF token first'); return; }
+            if (!token || !token.startsWith('hf_')) { alert('Enter your Hugging Face token first'); return; }
             const btns = document.querySelectorAll('#node-modal button');
             btns.forEach(b => b.disabled = true);
             try {
@@ -617,10 +612,10 @@
                 ];
                 drawGraph();
                 
-                logToPanel('Neural Graph initialized with 4 tiny HF models. Click RUN PARALLEL!', 'system');
+                logToPanel('Neural Graph initialized with 4 tiny HF models. Enter your token above & click RUN PARALLEL!', 'system');
             }, 380);
             
-            console.log('%c[SUDOTEK v0.3] Real Hugging Face inference ready. Tiny models: SmolLM, Qwen2-0.5B, Phi-3-mini.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.3] Real Hugging Face inference ready. Token is now user-provided only.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
