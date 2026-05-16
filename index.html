@@ -27,16 +27,10 @@
         
         .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.06; pointer-events: none; }
         
-        .note-row {
-            transition: background 0.1s ease;
-        }
-        .note-row:hover {
-            background: #0a0a0a;
-        }
+        .note-row:hover { background: #0a0a0a; }
     </style>
 </head>
 <body class="min-h-screen crt text-[#00ff41]">
-    <!-- Matrix Background -->
     <canvas id="matrix" class="matrix-bg"></canvas>
 
     <!-- Top Bar -->
@@ -48,7 +42,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm flex items-center gap-2">
+                <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm">
                     <span id="note-count">3 notes</span>
                 </div>
                 <button onclick="syncToRepo()" 
@@ -61,7 +55,6 @@
     </div>
 
     <div class="max-w-4xl mx-auto px-8 pt-24 pb-12">
-        <!-- Header -->
         <div class="text-center mb-10">
             <h1 class="text-6xl font-bold tracking-tight neon-text mb-3">SUDOTEK</h1>
             <p class="text-[#00ff9d] text-2xl">Neural Brain Architecture • Simple Notes</p>
@@ -71,7 +64,7 @@
         <div class="mb-8 flex gap-3">
             <input id="quick-input" type="text" 
                    class="flex-1 bg-black border border-[#00ff41]/50 px-6 py-4 text-xl focus:outline-none focus:border-[#00ff9d] placeholder:text-[#00ff41]/50"
-                   placeholder="Type your idea and press Enter..." 
+                   placeholder="Type your architecture idea and press Enter..." 
                    onkeydown="if (event.key === 'Enter') addQuickNote()">
             <button onclick="addQuickNote()" 
                     class="px-8 py-4 border-2 border-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-all text-xl">
@@ -83,28 +76,32 @@
         <div class="terminal-window bg-black border border-[#00ff41]/40">
             <div class="px-6 py-4 border-b border-[#00ff41]/30 flex items-center justify-between">
                 <span class="text-[#00ff9d] text-sm tracking-widest">ARCHITECTURE NOTES</span>
-                <span class="text-xs text-[#00ff41]/50">Click any note to edit • Press Enter to save</span>
             </div>
             
             <div id="notes-list" class="divide-y divide-[#00ff41]/20 max-h-[520px] overflow-auto"></div>
         </div>
 
         <div class="text-center mt-8 text-[#00ff41]/50 text-sm">
-            Notes are saved locally • Use SYNC button to push to /notes/ folder
+            Notes saved locally • Use SYNC button to push to repo
         </div>
     </div>
 
     <script>
-        // Matrix rain
         function createMatrixRain() {
             const canvas = document.getElementById('matrix');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-            const fontSize = 13; const columns = Math.floor(canvas.width / fontSize); const drops = Array(columns).fill(1);
+            const fontSize = 13;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(1);
+            
             function draw() {
-                ctx.fillStyle = 'rgba(5, 5, 5, 0.08)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#00ff41'; ctx.font = fontSize + 'px monospace';
+                ctx.fillStyle = 'rgba(5, 5, 5, 0.08)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px monospace';
                 for (let i = 0; i < drops.length; i++) {
                     ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
                     if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
@@ -140,7 +137,7 @@
             container.innerHTML = '';
             
             if (notes.length === 0) {
-                container.innerHTML = `<div class="px-6 py-12 text-center text-[#00ff41]/60">No notes yet. Type above and press ADD.</div>`;
+                container.innerHTML = `<div class="px-6 py-12 text-center text-[#00ff41]/60">No notes yet. Type above and press ADD or Enter.</div>`;
                 return;
             }
             
@@ -150,18 +147,21 @@
                 
                 row.innerHTML = `
                     <div class="flex-1">
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 mb-1">
                             <span class="text-[#00ff9d] text-xs tracking-widest">NOTE-${note.id}</span>
                             <span class="text-xs text-[#00ff41]/50">${new Date(note.timestamp).toLocaleDateString()}</span>
                         </div>
-                        <div contenteditable="true" class="mt-2 text-lg leading-tight outline-none" 
-                             onblur="updateNoteContent(${index}, this.innerText)">${note.content}</div>
+                        <div class="text-lg leading-tight">${note.content}</div>
                     </div>
                     
-                    <button onclick="deleteNote(${index})" 
-                            class="opacity-40 group-hover:opacity-100 text-red-400 hover:text-red-500 transition-all px-2 py-1 text-xl">
-                        &times;
-                    </button>
+                    <div class="flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-all">
+                        <button onclick="editNote(${index})" class="px-2 py-1 text-[#00ff9d] hover:text-white">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteNote(${index})" class="px-2 py-1 text-red-400 hover:text-red-500 text-xl">
+                            &times;
+                        </button>
+                    </div>
                 `;
                 container.appendChild(row);
             });
@@ -182,21 +182,15 @@
             saveNotes();
             renderNotes();
             input.value = '';
-            
-            // Flash effect
-            const container = document.getElementById('notes-list');
-            container.style.transition = 'none';
-            container.style.background = 'rgba(0,255,65,0.08)';
-            setTimeout(() => {
-                container.style.transition = 'background 0.6s';
-                container.style.background = 'transparent';
-            }, 50);
         }
 
-        function updateNoteContent(index, newContent) {
-            if (!newContent.trim()) return;
-            notes[index].content = newContent.trim();
-            saveNotes();
+        function editNote(index) {
+            const newContent = prompt('Edit note:', notes[index].content);
+            if (newContent !== null && newContent.trim() !== '') {
+                notes[index].content = newContent.trim();
+                saveNotes();
+                renderNotes();
+            }
         }
 
         function deleteNote(index) {
@@ -234,7 +228,6 @@ ${n.content}
             createMatrixRain();
             loadNotes();
             
-            // Keyboard: Press / to focus input
             document.addEventListener('keydown', e => {
                 if (e.key === '/' && document.activeElement.tagName === 'BODY') {
                     e.preventDefault();
