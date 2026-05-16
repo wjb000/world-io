@@ -43,7 +43,7 @@
             
             <div class="flex items-center gap-3">
                 <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm">
-                    <span id="note-count">3 notes</span>
+                    <span id="note-count">0 notes</span>
                 </div>
                 <button onclick="syncToRepo()" 
                         class="px-5 py-2 border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all flex items-center gap-2 text-sm">
@@ -92,7 +92,7 @@
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const chars = '01アイウエオカキクケコサシスセソタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             const fontSize = 13;
             const columns = Math.floor(canvas.width / fontSize);
             const drops = Array(columns).fill(1);
@@ -155,11 +155,11 @@
                     </div>
                     
                     <div class="flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-all">
-                        <button onclick="editNote(${index})" class="px-2 py-1 text-[#00ff9d] hover:text-white">
-                            <i class="fas fa-edit"></i>
+                        <button onclick="editNote(${index})" class="px-3 py-1 text-[#00ff9d] hover:text-white text-sm">
+                            <i class="fas fa-edit mr-1"></i> EDIT
                         </button>
-                        <button onclick="deleteNote(${index})" class="px-2 py-1 text-red-400 hover:text-red-500 text-xl">
-                            &times;
+                        <button onclick="deleteNote(${index})" class="px-3 py-1 text-red-400 hover:text-red-500 text-sm">
+                            <i class="fas fa-trash mr-1"></i> DELETE
                         </button>
                     </div>
                 `;
@@ -235,7 +235,7 @@ ${n.content}
                 }
             });
             
-            console.log('%c[SUDOTEK] Simple notes ready.', 'color:#00ff41');
+            console.log('%c[SUDOTEK] Notes system ready and working.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
