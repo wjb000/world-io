@@ -219,20 +219,26 @@
             const statusEl = document.getElementById('model-status');
             const nameEl = document.getElementById('model-name');
             
-            statusEl.innerHTML = `<span class="text-[#00ff41]/60">Loading...</span>`;
+            statusEl.innerHTML = `<span class="text-yellow-400">Downloading...</span>`;
             nameEl.innerHTML = modelId.split('-')[0];
             
             try {
                 engine = await webllm.CreateMLCEngine(modelId, {
                     initProgressCallback: (progress) => {
-                        statusEl.innerHTML = `<span class="text-[#00ff41]/60">${Math.round(progress.progress * 100)}%</span>`;
+                        const pct = Math.round(progress.progress * 100);
+                        statusEl.innerHTML = `<span class="text-yellow-400">${pct}%</span>`;
+                        
+                        if (pct % 20 === 0) {
+                            logToPanel(`Downloading ${modelId}... ${pct}%`, 'system');
+                        }
                     }
                 });
                 
                 currentModel = modelId;
                 isModelLoaded = true;
-                statusEl.innerHTML = `<span class="text-[#00ff9d]">READY</span>`;
-                logToPanel(`Model ${modelId} loaded successfully (fully local)`, 'system');
+                statusEl.innerHTML = `<span class="text-[#00ff9d]">READY (cached)</span>`;
+                logToPanel(`✅ Model ${modelId} loaded successfully (now cached in browser)`, 'system');
+                showToast('Model downloaded and cached! Future loads will be instant.', false, 4000);
                 
             } catch (e) {
                 statusEl.innerHTML = `<span class="text-red-400">FAILED</span>`;
@@ -244,7 +250,7 @@
             const c = document.getElementById('matrix');
             const cx = c.getContext('2d');
             c.width = window.innerWidth; c.height = window.innerHeight;
-            const chars = '01アイウエオカキクケコサシ斯セSOタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const chars = '01アイウエオカキクケコサシ斯セSOタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロWAヲン';
             const fs = 11; const cols = Math.floor(c.width / fs); const drops = Array(cols).fill(1);
             function draw() {
                 cx.fillStyle = 'rgba(5, 5, 5, 0.05)'; cx.fillRect(0, 0, c.width, c.height);
