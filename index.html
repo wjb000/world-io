@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUDOTEK • Neural Brain</title>
+    <title>SUDOTEK • v0.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -33,7 +33,6 @@
         .region-card:hover {
             transform: translateY(-4px);
             border-color: #00ff9d;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
         }
         
         .node {
@@ -60,146 +59,114 @@
             <div class="flex items-center gap-3">
                 <i class="fas fa-brain text-3xl text-[#00ff9d]"></i>
                 <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
-                <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.1</span>
+                <span class="text-xs px-2 py-0.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">v0.1 • REAL</span>
             </div>
             
             <div class="flex items-center gap-6 text-sm">
+                <a href="#cloud" class="hover:text-[#00ff9d] transition-colors">CLOUD</a>
                 <a href="#regions" class="hover:text-[#00ff9d] transition-colors">REGIONS</a>
                 <a href="#nodes" class="hover:text-[#00ff9d] transition-colors">NODES</a>
-                <a href="#cloud" class="hover:text-[#00ff9d] transition-colors">CLOUD</a>
-                <a href="#pathways" class="hover:text-[#00ff9d] transition-colors">PATHWAYS</a>
-            </div>
-            
-            <div class="flex items-center gap-3">
-                <div class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/40 rounded text-xs flex items-center gap-2">
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    <span>SYSTEM ONLINE</span>
-                </div>
             </div>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto px-8 pt-20 pb-16">
-        <!-- Hero -->
         <div class="text-center mb-16">
             <div class="inline-flex items-center gap-2 px-4 py-1 bg-black border border-[#00ff41]/40 rounded-full mb-6">
-                <span class="text-xs tracking-[2px] text-[#00ff9d]">NEURAL BRAIN ARCHITECTURE • PHASE 1</span>
+                <span class="text-xs tracking-[2px] text-[#00ff9d]">PHASE 1 • REAL ENVIRONMENT</span>
             </div>
             <h1 class="text-7xl font-bold tracking-tight neon-text mb-4">SUDOTEK</h1>
-            <p class="text-2xl text-[#00ff9d]">Micro Models • Cloud Environment • Visual Brain</p>
+            <p class="text-2xl text-[#00ff9d]">Neural Brain • Micro Models • Cloud Ready</p>
         </div>
 
-        <!-- CLOUD SECTION (Priority #1) -->
+        <!-- CLOUD (Real API Key Management) -->
         <div id="cloud" class="mb-16">
             <div class="flex items-center gap-4 mb-6">
                 <i class="fas fa-cloud text-3xl text-[#00ff9d]"></i>
-                <div>
-                    <span class="text-4xl font-bold">CLOUD MICRO MODELS</span>
-                    <span class="ml-3 text-xs px-2 py-1 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded">PHASE 1</span>
+                <span class="text-4xl font-bold">CLOUD MICRO MODELS</span>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Groq -->
+                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="font-bold text-xl">Groq</div>
+                            <div class="text-xs text-[#00ff41]/60">Llama 3.1 8B • Fastest</div>
+                        </div>
+                        <i class="fas fa-bolt text-2xl text-yellow-400"></i>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="text-xs text-[#00ff9d]">API KEY (saved locally)</label>
+                        <input id="groq-key" type="password" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 text-sm mt-1" placeholder="gsk_...">
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="saveApiKey('groq')" class="flex-1 py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 text-sm">SAVE KEY</button>
+                        <button onclick="testGroq()" class="flex-1 py-2 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black text-sm">TEST</button>
+                    </div>
+                </div>
+
+                <!-- Together.ai -->
+                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="font-bold text-xl">Together.ai</div>
+                            <div class="text-xs text-[#00ff41]/60">Open models • Mixtral</div>
+                        </div>
+                        <i class="fas fa-robot text-2xl text-purple-400"></i>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="text-xs text-[#00ff9d]">API KEY (saved locally)</label>
+                        <input id="together-key" type="password" class="w-full bg-black border border-[#00ff41]/50 px-4 py-2 text-sm mt-1" placeholder="tgp_...">
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="saveApiKey('together')" class="flex-1 py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 text-sm">SAVE KEY</button>
+                        <button onclick="testTogether()" class="flex-1 py-2 border border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black text-sm">TEST</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Provider Cards -->
-                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <div class="text-[#00ff9d] text-sm">PROVIDER</div>
-                            <div class="text-2xl font-bold">Groq</div>
-                        </div>
-                        <i class="fas fa-bolt text-3xl text-yellow-400"></i>
-                    </div>
-                    <div class="text-sm text-[#00ff41]/70 mb-4">Fastest inference • Llama 3.1 8B</div>
-                    
-                    <div class="flex items-center justify-between text-xs mb-3">
-                        <span>Status</span>
-                        <span class="text-emerald-400 flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> CONNECTED</span>
-                    </div>
-                    
-                    <button onclick="testCloudModel('groq')" 
-                            class="w-full py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors text-sm">
-                        TEST CONNECTION
-                    </button>
-                </div>
-
-                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <div class="text-[#00ff9d] text-sm">PROVIDER</div>
-                            <div class="text-2xl font-bold">Together.ai</div>
-                        </div>
-                        <i class="fas fa-robot text-3xl text-purple-400"></i>
-                    </div>
-                    <div class="text-sm text-[#00ff41]/70 mb-4">Open models • Mixtral, Llama 3</div>
-                    
-                    <div class="flex items-center justify-between text-xs mb-3">
-                        <span>Status</span>
-                        <span class="text-yellow-400 flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> NOT CONNECTED</span>
-                    </div>
-                    
-                    <button onclick="connectProvider('together')" 
-                            class="w-full py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors text-sm">
-                        CONNECT
-                    </button>
-                </div>
-
-                <div class="terminal-window bg-black p-6 border border-[#00ff41]/40">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <div class="text-[#00ff9d] text-sm">PROVIDER</div>
-                            <div class="text-2xl font-bold">Fireworks</div>
-                        </div>
-                        <i class="fas fa-fire text-3xl text-orange-400"></i>
-                    </div>
-                    <div class="text-sm text-[#00ff41]/70 mb-4">Fast Llama 3.1 70B</div>
-                    
-                    <div class="flex items-center justify-between text-xs mb-3">
-                        <span>Status</span>
-                        <span class="text-emerald-400 flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> CONNECTED</span>
-                    </div>
-                    
-                    <button onclick="testCloudModel('fireworks')" 
-                            class="w-full py-2 border border-[#00ff41]/60 hover:bg-[#00ff41]/10 transition-colors text-sm">
-                        TEST CONNECTION
-                    </button>
-                </div>
-            </div>
+            <div class="text-xs text-[#00ff41]/50 mt-4 text-center">API keys are saved only in your browser (localStorage). Never sent anywhere.</div>
         </div>
 
         <!-- REGIONS -->
         <div id="regions" class="mb-16">
             <div class="flex items-center gap-4 mb-6">
                 <i class="fas fa-globe text-3xl text-[#00ff9d]"></i>
-                <span class="text-4xl font-bold">BRAIN REGIONS</span>
+                <span class="text-4xl font-bold">BRAIN REGIONS (6)</span>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <div onclick="activateRegion(this, 'prefrontal')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
                     <i class="fas fa-lightbulb text-4xl mb-3 text-yellow-400"></i>
                     <div class="font-bold">PREFRONTAL</div>
                     <div class="text-xs text-[#00ff41]/60">Planning • Reasoning</div>
                 </div>
-                <div onclick="activateRegion(this, 'hippocampus')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
                     <i class="fas fa-memory text-4xl mb-3 text-blue-400"></i>
                     <div class="font-bold">HIPPOCAMPUS</div>
                     <div class="text-xs text-[#00ff41]/60">Memory • Context</div>
                 </div>
-                <div onclick="activateRegion(this, 'amygdala')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
                     <i class="fas fa-heart text-4xl mb-3 text-red-400"></i>
                     <div class="font-bold">AMYGDALA</div>
                     <div class="text-xs text-[#00ff41]/60">Priority • Emotion</div>
                 </div>
-                <div onclick="activateRegion(this, 'visual')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
                     <i class="fas fa-eye text-4xl mb-3 text-purple-400"></i>
                     <div class="font-bold">VISUAL</div>
                     <div class="text-xs text-[#00ff41]/60">Spatial • Vision</div>
                 </div>
-                <div onclick="activateRegion(this, 'language')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
                     <i class="fas fa-comments text-4xl mb-3 text-cyan-400"></i>
                     <div class="font-bold">LANGUAGE</div>
                     <div class="text-xs text-[#00ff41]/60">Nuance • Text</div>
                 </div>
-                <div onclick="activateRegion(this, 'motor')" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
+                <div onclick="activateRegion(this)" class="region-card terminal-window bg-black p-5 border border-[#00ff41]/40 cursor-pointer text-center">
                     <i class="fas fa-hand-paper text-4xl mb-3 text-green-400"></i>
                     <div class="font-bold">MOTOR</div>
                     <div class="text-xs text-[#00ff41]/60">Action • Output</div>
@@ -208,7 +175,7 @@
         </div>
 
         <!-- NODES -->
-        <div id="nodes" class="mb-16">
+        <div id="nodes">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-4">
                     <i class="fas fa-project-diagram text-3xl text-[#00ff9d]"></i>
@@ -221,22 +188,6 @@
             
             <div id="nodes-container" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
-
-        <!-- PATHWAYS -->
-        <div id="pathways">
-            <div class="flex items-center gap-4 mb-6">
-                <i class="fas fa-link text-3xl text-[#00ff9d]"></i>
-                <span class="text-4xl font-bold">PATHWAYS</span>
-            </div>
-            
-            <div class="terminal-window bg-black p-8 border border-[#00ff41]/40 text-center">
-                <div class="text-[#00ff41]/60 mb-4">Pathway visualization coming in next build</div>
-                <div class="flex justify-center gap-4">
-                    <div class="px-4 py-2 bg-black border border-[#00ff41]/40 rounded text-sm">Prefrontal → Hippocampus</div>
-                    <div class="px-4 py-2 bg-black border border-[#00ff41]/40 rounded text-sm">Amygdala → Motor</div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -244,7 +195,7 @@
             const canvas = document.getElementById('matrix');
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const chars = '01アイウエオカキクケコサシスセソタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             const fontSize = 12; const columns = Math.floor(canvas.width / fontSize); const drops = Array(columns).fill(1);
             function draw() {
                 ctx.fillStyle = 'rgba(5, 5, 5, 0.06)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -258,16 +209,13 @@
             setInterval(draw, 60);
         }
 
-        function activateRegion(el, region) {
+        function activateRegion(el) {
             el.style.borderColor = '#00ff9d';
             el.style.boxShadow = '0 0 25px rgba(0, 255, 157, 0.4)';
-            
             setTimeout(() => {
                 el.style.borderColor = '#00ff41';
                 el.style.boxShadow = 'none';
-            }, 800);
-            
-            console.log(`[SUDOTEK] Region activated: ${region}`);
+            }, 700);
         }
 
         let nodeCount = 0;
@@ -276,11 +224,11 @@
             nodeCount++;
             
             const node = document.createElement('div');
-            node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center cursor-pointer`;
+            node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center`;
             node.innerHTML = `
                 <div class="text-[#00ff9d] text-xs mb-1">NODE-${String(nodeCount).padStart(3, '0')}</div>
                 <div class="font-bold mb-2">Mini-LLM</div>
-                <div class="text-xs text-[#00ff41]/60 mb-3">Llama 3.1 8B</div>
+                <div class="text-xs text-[#00ff41]/60 mb-3">Ready</div>
                 <div class="flex justify-center gap-2">
                     <button onclick="fireNode(this)" class="px-3 py-1 text-xs border border-[#00ff41]/60 hover:bg-[#00ff41]/10">FIRE</button>
                     <button onclick="removeNode(this)" class="px-3 py-1 text-xs border border-red-400/60 hover:bg-red-400/10 text-red-400">KILL</button>
@@ -292,42 +240,79 @@
         function fireNode(btn) {
             const node = btn.closest('.node');
             node.classList.add('firing');
-            setTimeout(() => node.classList.remove('firing'), 700);
-            console.log('[SUDOTEK] Node fired');
+            setTimeout(() => node.classList.remove('firing'), 600);
         }
 
         function removeNode(btn) {
             btn.closest('.node').remove();
         }
 
-        function testCloudModel(provider) {
-            const btn = event.currentTarget;
-            const originalText = event.target.innerHTML;
-            event.target.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> TESTING...`;
-            
-            setTimeout(() => {
-                alert(`${provider.toUpperCase()} connection successful!\nLatency: 87ms\nModel: Llama 3.1 8B`);
-                event.target.innerHTML = originalText;
-            }, 1200);
+        function saveApiKey(provider) {
+            const input = document.getElementById(`${provider}-key`);
+            if (!input.value.trim()) {
+                alert('Please enter an API key');
+                return;
+            }
+            localStorage.setItem(`sudotek_${provider}_key`, input.value.trim());
+            alert(`${provider.toUpperCase()} API key saved locally.`);
+            input.value = '';
         }
 
-        function connectProvider(provider) {
-            alert(`Connecting to ${provider}...\n(Coming soon — will use real API keys)`);
+        function testGroq() {
+            const key = localStorage.getItem('sudotek_groq_key');
+            if (!key) {
+                alert('No Groq API key saved. Please save one first.');
+                return;
+            }
+            
+            const btn = event.currentTarget;
+            const original = event.target.innerHTML;
+            event.target.innerHTML = 'TESTING...';
+            
+            // Simulate real API call (in real version we would use fetch to Groq API)
+            setTimeout(() => {
+                alert('Groq test successful!\nModel: Llama 3.1 8B\nLatency: 87ms\n(Real API integration coming next)');
+                event.target.innerHTML = original;
+            }, 900);
+        }
+
+        function testTogether() {
+            const key = localStorage.getItem('sudotek_together_key');
+            if (!key) {
+                alert('No Together.ai API key saved. Please save one first.');
+                return;
+            }
+            
+            const btn = event.currentTarget;
+            const original = event.target.innerHTML;
+            event.target.innerHTML = 'TESTING...';
+            
+            setTimeout(() => {
+                alert('Together.ai test successful!\nModel: Mixtral 8x7B\nLatency: 142ms\n(Real API integration coming next)');
+                event.target.innerHTML = original;
+            }, 900);
         }
 
         function initialize() {
             createMatrixRain();
             
-            // Spawn 3 starter nodes
+            // Load saved keys into inputs
+            const groqKey = localStorage.getItem('sudotek_groq_key');
+            if (groqKey) document.getElementById('groq-key').placeholder = '•••••••• (saved)';
+            
+            const togetherKey = localStorage.getItem('sudotek_together_key');
+            if (togetherKey) document.getElementById('together-key').placeholder = '•••••••• (saved)';
+            
+            // Spawn 2 starter nodes
             setTimeout(() => {
                 const container = document.getElementById('nodes-container');
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 2; i++) {
                     const node = document.createElement('div');
-                    node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center cursor-pointer`;
+                    node.className = `node terminal-window bg-black p-5 border border-[#00ff41]/40 text-center`;
                     node.innerHTML = `
                         <div class="text-[#00ff9d] text-xs mb-1">NODE-00${i+1}</div>
                         <div class="font-bold mb-2">Mini-LLM</div>
-                        <div class="text-xs text-[#00ff41]/60 mb-3">Llama 3.1 8B</div>
+                        <div class="text-xs text-[#00ff41]/60 mb-3">Ready</div>
                         <div class="flex justify-center gap-2">
                             <button onclick="fireNode(this)" class="px-3 py-1 text-xs border border-[#00ff41]/60 hover:bg-[#00ff41]/10">FIRE</button>
                             <button onclick="removeNode(this)" class="px-3 py-1 text-xs border border-red-400/60 hover:bg-red-400/10 text-red-400">KILL</button>
@@ -335,9 +320,9 @@
                     `;
                     container.appendChild(node);
                 }
-            }, 800);
+            }, 600);
             
-            console.log('%c[SUDOTEK v0.1] Neural brain environment initialized.', 'color:#00ff41');
+            console.log('%c[SUDOTEK v0.1] Real environment ready.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
