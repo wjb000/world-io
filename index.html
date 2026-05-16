@@ -26,30 +26,19 @@
         }
         
         .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.06; pointer-events: none; }
-        
-        .note-row:hover { background: #0a0a0a; }
     </style>
 </head>
 <body class="min-h-screen crt text-[#00ff41]">
     <canvas id="matrix" class="matrix-bg"></canvas>
 
-    <!-- Top Bar -->
     <div class="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur border-b border-[#00ff41]/30 z-50">
         <div class="max-w-4xl mx-auto px-8 py-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <i class="fas fa-brain text-3xl text-[#00ff9d]"></i>
                 <span class="text-4xl font-bold tracking-[4px]">SUDOTEK</span>
             </div>
-            
-            <div class="flex items-center gap-3">
-                <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm">
-                    <span id="note-count">0 notes</span>
-                </div>
-                <button onclick="syncToRepo()" 
-                        class="px-5 py-2 border-2 border-[#00ff9d] hover:bg-[#00ff9d] hover:text-black transition-all flex items-center gap-2 text-sm">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>SYNC TO REPO</span>
-                </button>
+            <div class="px-4 py-1.5 bg-[#00ff41]/10 border border-[#00ff41]/40 rounded text-sm">
+                <span id="note-count">0 notes</span>
             </div>
         </div>
     </div>
@@ -57,7 +46,7 @@
     <div class="max-w-4xl mx-auto px-8 pt-24 pb-12">
         <div class="text-center mb-10">
             <h1 class="text-6xl font-bold tracking-tight neon-text mb-3">SUDOTEK</h1>
-            <p class="text-[#00ff9d] text-2xl">Neural Brain Architecture • Simple Notes</p>
+            <p class="text-[#00ff9d] text-2xl">Neural Brain Architecture • Notes</p>
         </div>
 
         <!-- Quick Add -->
@@ -82,7 +71,7 @@
         </div>
 
         <div class="text-center mt-8 text-[#00ff41]/50 text-sm">
-            Notes saved locally • Use SYNC button to push to repo
+            Notes are saved in your browser. Click "PUSH TO GITHUB" on any note to send it to the repo.
         </div>
     </div>
 
@@ -92,7 +81,7 @@
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            const chars = '01アイウエオカキクケコサシスセソタチツテトNAニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             const fontSize = 13;
             const columns = Math.floor(canvas.width / fontSize);
             const drops = Array(columns).fill(1);
@@ -137,13 +126,13 @@
             container.innerHTML = '';
             
             if (notes.length === 0) {
-                container.innerHTML = `<div class="px-6 py-12 text-center text-[#00ff41]/60">No notes yet. Type above and press ADD or Enter.</div>`;
+                container.innerHTML = `<div class="px-6 py-12 text-center text-[#00ff41]/60">No notes yet. Type above and press ADD.</div>`;
                 return;
             }
             
             notes.sort((a, b) => b.timestamp - a.timestamp).forEach((note, index) => {
                 const row = document.createElement('div');
-                row.className = `note-row px-6 py-4 flex items-start gap-4 group`;
+                row.className = `px-6 py-4 flex items-start gap-4 group border-b border-[#00ff41]/20 last:border-0`;
                 
                 row.innerHTML = `
                     <div class="flex-1">
@@ -154,12 +143,13 @@
                         <div class="text-lg leading-tight">${note.content}</div>
                     </div>
                     
-                    <div class="flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-all">
-                        <button onclick="editNote(${index})" class="px-3 py-1 text-[#00ff9d] hover:text-white text-sm">
-                            <i class="fas fa-edit mr-1"></i> EDIT
+                    <div class="flex flex-col gap-2 opacity-40 group-hover:opacity-100 transition-all">
+                        <button onclick="pushNoteToGitHub(${index})" 
+                                class="px-4 py-1.5 bg-[#00ff41] text-black text-xs hover:bg-white transition-all flex items-center gap-1">
+                            <i class="fas fa-upload"></i> <span>PUSH TO GITHUB</span>
                         </button>
-                        <button onclick="deleteNote(${index})" class="px-3 py-1 text-red-400 hover:text-red-500 text-sm">
-                            <i class="fas fa-trash mr-1"></i> DELETE
+                        <button onclick="deleteNote(${index})" class="px-3 py-1 text-red-400 hover:text-red-500 text-xs">
+                            DELETE
                         </button>
                     </div>
                 `;
@@ -184,13 +174,23 @@
             input.value = '';
         }
 
-        function editNote(index) {
-            const newContent = prompt('Edit note:', notes[index].content);
-            if (newContent !== null && newContent.trim() !== '') {
-                notes[index].content = newContent.trim();
-                saveNotes();
-                renderNotes();
-            }
+        function pushNoteToGitHub(index) {
+            const note = notes[index];
+            const filename = `note-${note.id}.md`;
+            
+            const content = `## ${note.content}
+
+---
+*Note ID: ${note.id} | Created: ${new Date(note.timestamp).toISOString()}*`;
+            
+            const message = `Add note ${note.id} to SUDOTEK`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(content).then(() => {
+                alert(`Note copied!\n\nNow tell me in chat:\n"push note ${note.id} to the repo"`);
+            }).catch(() => {
+                prompt('Copy this and send to me:', content);
+            });
         }
 
         function deleteNote(index) {
@@ -198,30 +198,6 @@
             notes.splice(index, 1);
             saveNotes();
             renderNotes();
-        }
-
-        function syncToRepo() {
-            if (notes.length === 0) {
-                alert('No notes to sync yet.');
-                return;
-            }
-            
-            const text = notes.map(n => 
-                `## Note ${n.id}
-
-${n.content}
-
----
-*Created: ${new Date(n.timestamp).toISOString()}*`
-            ).join('
-
-');
-            
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Notes copied to clipboard!\n\nNow tell me in chat: "push these notes to the repo"');
-            }).catch(() => {
-                prompt('Copy this text and send it to me:', text);
-            });
         }
 
         function initialize() {
@@ -235,7 +211,7 @@ ${n.content}
                 }
             });
             
-            console.log('%c[SUDOTEK] Notes system ready and working.', 'color:#00ff41');
+            console.log('%c[SUDOTEK] Notes system ready.', 'color:#00ff41');
         }
         window.onload = initialize;
     </script>
