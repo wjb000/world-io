@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORLD-IO // ACCESS GRANTED</title>
+    <title>WORLD-IO // SECURE ACCESS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         
         body {
-            font-family: 'VT323', monospace;
+            font-family: 'VT323', 'Courier New', monospace;
             background: #0a0a0a;
             color: #00ff41;
             overflow-x: hidden;
@@ -18,100 +18,83 @@
         
         .crt {
             position: relative;
+            background: 
+                linear-gradient(rgba(0, 255, 65, 0.02) 50%, transparent 50%),
+                #0a0a0a;
+            background-size: 100% 4px;
         }
         
-        .crt::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(
-                transparent 0px,
-                transparent 2px,
-                rgba(0, 255, 65, 0.03) 2px,
-                rgba(0, 255, 65, 0.03) 4px
-            );
-            pointer-events: none;
-            z-index: 2;
-            animation: scanline 4s linear infinite;
+        .terminal-frame {
+            border: 1px solid rgba(0, 255, 65, 0.4);
+            box-shadow: 
+                0 0 40px rgba(0, 255, 65, 0.15),
+                inset 0 0 60px rgba(0, 0, 0, 0.8);
         }
         
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
+        .header-text {
+            text-shadow: 0 0 10px #00ff41;
         }
         
-        .glitch {
-            position: relative;
+        .card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .glitch:hover {
-            animation: glitch 0.3s linear infinite;
-        }
-        
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff; }
-            100% { text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff; }
-        }
-        
-        .terminal-header {
-            animation: typing 3.5s steps(40, end) forwards;
-            overflow: hidden;
-            white-space: nowrap;
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #00ff9d;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
         }
     </style>
 </head>
 <body class="min-h-screen crt">
-    <div class="max-w-4xl mx-auto p-8">
+    <div class="max-w-5xl mx-auto p-8">
         <!-- Header -->
-        <div class="border border-[#00ff41]/50 bg-black/80 p-6 mb-12 backdrop-blur-md">
-            <div class="flex items-center gap-3 mb-4">
-                <i class="fas fa-terminal text-3xl"></i>
+        <div class="terminal-frame bg-black/90 p-10 mb-16 backdrop-blur-xl">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-terminal text-4xl text-[#00ff41]"></i>
                 <div>
-                    <h1 class="text-5xl glitch terminal-header">WORLD-IO v0.1</h1>
-                    <p class="text-[#00ff9d] text-xl">EST. 2026 // SECURE CONNECTION</p>
+                    <h1 class="text-6xl header-text tracking-wider">WORLD-IO</h1>
+                    <p class="text-[#00ff9d] text-2xl mt-1">v0.1 • EST. 2026</p>
                 </div>
             </div>
-            <div class="text-[#00ff41]/70 text-lg">
+            <div class="text-2xl text-[#00ff41]/90">
                 > Hello Bros. System online.
+            </div>
+            <div class="mt-2 text-[#00ff41]/50 text-lg font-light">
+                SECURE CONNECTION • AES-256 ENCRYPTED • NODE ACTIVE
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Content -->
         <div class="grid md:grid-cols-2 gap-8">
-            <!-- Card 1 -->
-            <div class="bg-black/70 border border-[#00ff41]/30 p-8 hover:border-[#00ff9d] transition-all duration-300 group">
-                <h2 class="text-3xl mb-4 flex items-center gap-3">
+            <div class="card bg-black/70 border border-[#00ff41]/30 p-9">
+                <h2 class="text-4xl mb-6 flex items-center gap-4">
                     <i class="fas fa-network-wired"></i>
                     STATUS
                 </h2>
-                <div class="space-y-3 text-lg">
-                    <p><span class="text-[#00ff9d]">●</span> CONNECTED</p>
-                    <p><span class="text-[#00ff9d]">●</span> ENCRYPTION: AES-256</p>
-                    <p><span class="text-[#00ff9d]">●</span> FIREWALL: ACTIVE</p>
+                <div class="space-y-4 text-xl">
+                    <div class="flex justify-between"><span class="text-[#00ff9d]">● LIVE</span><span>MAINFRAME</span></div>
+                    <div class="flex justify-between"><span class="text-[#00ff9d]">● ACTIVE</span><span>ENCRYPTION</span></div>
+                    <div class="flex justify-between"><span class="text-[#00ff9d]">● STABLE</span><span>FIREWALL</span></div>
                 </div>
             </div>
 
-            <!-- Card 2 -->
-            <div class="bg-black/70 border border-[#00ff41]/30 p-8 hover:border-[#00ff9d] transition-all duration-300 group">
-                <h2 class="text-3xl mb-4 flex items-center gap-3">
+            <div class="card bg-black/70 border border-[#00ff41]/30 p-9">
+                <h2 class="text-4xl mb-6 flex items-center gap-4">
                     <i class="fas fa-code"></i>
-                    MISSION
+                    DIRECTIVE
                 </h2>
-                <p class="text-lg leading-relaxed">
-                    Building the future, one line of code at a time.<br>
-                    Retro roots. Modern edge.
+                <p class="text-xl leading-relaxed text-[#00ff41]/90">
+                    Retro roots.<br>
+                    Cutting-edge execution.<br>
+                    Building tomorrow, today.
                 </p>
             </div>
         </div>
 
-        <div class="mt-12 text-center text-[#00ff41]/60 text-sm">
-            <p>© WORLD-IO • ALL RIGHTS RESERVED • STAY FROSTY</p>
+        <div class="mt-20 text-center text-[#00ff41]/40 text-sm tracking-widest">
+            © WORLD-IO • ALL RIGHTS RESERVED • OPERATOR CLEARANCE LEVEL 7
         </div>
     </div>
-
-    <script>
-        // Optional subtle matrix rain in background if you want to amp it up later
-        console.log("%cWORLD-IO initialized. Welcome, operator.", "color: #00ff41; font-family: monospace;");
-    </script>
 </body>
 </html>
